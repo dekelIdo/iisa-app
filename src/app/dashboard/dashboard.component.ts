@@ -76,7 +76,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     );
 
     if (this.candidates.length === 0) {
-      this.addTestData();
+      this.addInitMockData();
       this.loadData();
     }
   }
@@ -158,7 +158,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  private addTestData(): void {
+  private addInitMockData(): void {
     const testCandidates: Candidate[] = [
       {
         id: '1',
@@ -174,13 +174,25 @@ export class DashboardComponent implements OnInit, OnDestroy {
       },
       {
         id: '2',
-        fullName: 'Eli Yaho Smith',
-        email: 'Eli.smith@leumi.com',
+        fullName: 'Dekel Ido',
+        email: 'Dekel-ido-@iisa.com',
+        phone: '+972-50-123-4567',
+        age: 25,
+        city: 'Tel Aviv',
+        hobbies: 'Astronomy, Hiking, Photography',
+        whyPerfect: 'I have always been fascinated by space exploration and have extensive experience in scientific research.',
+        profileImage: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxjaXJjbGUgY3g9IjUwIiBjeT0iNDAiIHI9IjE1IiBmaWxsPSIjQ0NDIi8+CjxyZWN0IHg9IjMwIiB5PSI2MCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjMwIiBmaWxsPSIjQ0NDIi8+Cjwvc3ZnPgo=',
+        submissionDate: new Date('2024-01-15T10:30:00Z')
+      },
+      {
+        id: '3',
+        fullName: 'Maya Levi',
+        email: 'Maya.levi@gmail.com',
         phone: '+972-52-987-6543',
         age: 32,
         city: 'Jerusalem',
-        hobbies: 'Space Science, Yoga, Reading',
-        whyPerfect: 'My background in physics and passion for space exploration makes me an ideal candidate for this mission.',
+        hobbies: 'Space and computer science',
+        whyPerfect: 'Ideal candidate for this mission.',
         profileImage: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxjaXJjbGUgY3g9IjUwIiBjeT0iNDAiIHI9IjE1IiBmaWxsPSIjQ0NDIi8+CjxyZWN0IHg9IjMwIiB5PSI2MCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjMwIiBmaWxsPSIjQ0NDIi8+Cjwvc3ZnPgo=',
         submissionDate: new Date('2024-01-16T14:45:00Z')
       }

@@ -89,12 +89,17 @@
         <div class="form-row">
           <mat-form-field appearance="outline">
             <mat-label>Phone Number</mat-label>
-            <input matInput formControlName="phone" placeholder="Enter your phone number">
+            <input matInput formControlName="phone" placeholder="Enter your phone number" 
+                   (input)="onPhoneInput($event)" 
+                   (keypress)="onPhoneKeyPress($event)">
             <button matSuffix mat-icon-button type="button" (click)="clearField('phone')" *ngIf="registrationForm.get('phone')?.value">
               <mat-icon>close</mat-icon>
             </button>
             <mat-error *ngIf="registrationForm.get('phone')?.hasError('required')">
               Phone number is required
+            </mat-error>
+            <mat-error *ngIf="registrationForm.get('phone')?.hasError('pattern')">
+              Please enter a valid phone number (numbers only)
             </mat-error>
           </mat-form-field>
 

@@ -61,7 +61,7 @@ export class RegistrationComponent implements OnInit {
     this.registrationForm = this.fb.group({
       fullName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', Validators.required],
+      phone: ['', [Validators.required, Validators.pattern(/^[0-9+\-\s()]*$/)]],
       age: ['', [Validators.required, Validators.min(18), Validators.max(100)]],
       city: ['', Validators.required],
       hobbies: ['', Validators.required],
@@ -76,6 +76,26 @@ export class RegistrationComponent implements OnInit {
 
   ngOnInit(): void {
     this.analyticsService.incrementVisits();
+  }
+
+  onPhoneInput(event: any): void {
+    const input = event.target;
+    const value = input.value;
+    const numbersOnly = value.replace(/[^0-9+\-\s()]/g, '');
+    
+    if (value !== numbersOnly) {
+      input.value = numbersOnly;
+      this.registrationForm.patchValue({ phone: numbersOnly });
+    }
+  }
+
+  onPhoneKeyPress(event: KeyboardEvent): void {
+    const allowedChars = /[0-9+\-\s()]/;
+    const key = event.key;
+    
+    if (!allowedChars.test(key) && !event.ctrlKey && !event.metaKey) {
+      event.preventDefault();
+    }
   }
 
   triggerFileInput(): void {
@@ -151,13 +171,25 @@ export class RegistrationComponent implements OnInit {
   onSubmit(): void {
     if (this.registrationForm.valid) {
       const formData = this.registrationForm.value;
+      const email = this.sanitizeInput(formData.email);
+      
+      if (!this.existingCandidate) {
+        const existingCandidate = this.candidateService.getCandidateByEmail(email);
+        if (existingCandidate) {
+          this.snackBar.open('An application with this email already exists. You can edit it within 3 days of submission.', 'Close', { 
+            duration: 4000,
+            panelClass: ['error-snackbar']
+          });
+          return;
+        }
+      }
       
       const defaultImage = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxjaXJjbGUgY3g9IjUwIiBjeT0iNDAiIHI9IjE1IiBmaWxsPSIjQ0NDIi8+CjxyZWN0IHg9IjMwIiB5PSI2MCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjMwIiBmaWxsPSIjQ0NDIi8+Cjwvc3ZnPgo=';
       
       const candidate: Candidate = {
         id: this.existingCandidate?.id || Date.now().toString(),
         fullName: this.sanitizeInput(formData.fullName),
-        email: this.sanitizeInput(formData.email),
+        email: email,
         phone: this.sanitizeInput(formData.phone),
         age: formData.age,
         city: this.sanitizeInput(formData.city),
@@ -182,7 +214,25 @@ export class RegistrationComponent implements OnInit {
   resetForm(): void {
     this.registrationForm.reset();
     this.profileImagePreview = null;
-    this.registrationForm.updateValueAndValidity();
+    Object.keys(this.registrationForm.controls).forEach(key => {
+      const control = this.registrationForm.get(key);
+      control?.markAsUntouched();
+      control?.markAsPristine();
+      control?.setErrors(null);
+    });
+    
+    this.emailCheckForm.reset();
+    Object.keys(this.emailCheckForm.controls).forEach(key => {
+      const control = this.emailCheckForm.get(key);
+      control?.markAsUntouched();
+      control?.markAsPristine();
+      control?.setErrors(null);
+    });
+    this.emailChecked = false;
+    this.emailCheckMessage = '';
+    this.emailCheckMessageType = '';
+    this.isEditing = false;
+    this.existingCandidate = null;
   }
 
   clearField(fieldName: string): void {
