@@ -1,7 +1,7 @@
 # IISA - Israeli Imaginary Space Agency
 
 A clean Angular 19 application for managing space mission candidates, and a management dashboard for IISA’s recruiting team with nice login authentication.
-Please use the password - 'reflectize' to login.
+Please use the password - 'reflectiz' to login.
 You can visit here - https://iisa-app.onrender.com
 
 For instructions to run locally please scroll to the end of the README
