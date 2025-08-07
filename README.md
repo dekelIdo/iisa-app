@@ -13,7 +13,8 @@ You can visit here - https://iisa-app.onrender.com
 - Search and filter functionality
 - Individual candidate detail view with navigation
 
-  <img width="937" height="760" alt="image" src="https://github.com/user-attachments/assets/b79fd7b3-ec0b-47eb-bb3e-5a4104985227" />
+<img width="937" height="816" alt="image" src="https://github.com/user-attachments/assets/f83ad201-4286-423a-aa75-4d6d715058b0" />
+
 
   
 ### Registration Page
