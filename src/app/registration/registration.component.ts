@@ -183,6 +183,7 @@ export class RegistrationComponent implements OnInit {
             duration: 4000,
             panelClass: ['error-snackbar']
           });
+          this.registrationForm.get('email')?.setValue('');
           return;
         }
       }
@@ -252,6 +253,7 @@ export class RegistrationComponent implements OnInit {
       const existing = this.candidateService.getCandidateByEmail(email);
       if (existing && !this.existingCandidate) {
         this.snackBar.open('An application with this email already exists. You can edit it within 3 days of submission.', 'Close', { duration: 4000 });
+        this.registrationForm.get('email')?.setValue('');
       }
     }
   }
