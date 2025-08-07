@@ -50,7 +50,4 @@ ng serve
 - **Filters**: Search by name, city, and age range
 
 ## Data Storage
-All data is stored locally in the browser using LocalStorage. No backend required.
-=======
-# iisa-app
->>>>>>> e71035908f26bde445823efa0fe8abc409b44575
+All data is stored locally in the browser using LocalStorage.
