@@ -1,9 +1,0 @@
-services:
-  - type: web
-    name: iisa-app
-    buildCommand: npm run build
-    staticPublishPath: ./dist/iisa-app/browser
-    routes:
-      - type: rewrite
-        source: /(.*)
-        destination: /index.html
