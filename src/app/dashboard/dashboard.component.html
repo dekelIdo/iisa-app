@@ -1,0 +1,34 @@
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h1>IISA Dashboard</h1>
+    <button mat-raised-button color="warn" (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      Logout
+    </button>
+  </div>
+
+  <app-charts [candidates]="candidates"></app-charts>
+
+  <app-map-preview 
+    [candidates]="candidates"
+    (openMap)="onOpenMap()">
+  </app-map-preview>
+
+  <div class="candidates-section">
+    <app-filters 
+      [filters]="filters"
+      [cities]="getCities()"
+      (filtersChange)="onFiltersChange($event)"
+      (clearSearch)="onClearSearch()"
+      (clearCity)="onClearCity()"
+      (clearAgeRange)="onClearAgeRange()"
+      (resetAllFilters)="onResetAllFilters()">
+    </app-filters>
+    
+    <app-candidates-table 
+      [candidates]="candidates"
+      [filteredCandidates]="filteredCandidates"
+      (viewCandidate)="onViewCandidate($event)">
+    </app-candidates-table>
+  </div>
+</div> 

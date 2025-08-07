@@ -1,0 +1,175 @@
+<div class="registration-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Join the Israeli Imaginary Space Agency</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Email Check Section -->
+      <div class="email-check-section" *ngIf="!emailChecked">
+        <div class="email-check-header">
+          <h3>Already registered?</h3>
+          <p>Enter your email to update your details</p>
+        </div>
+        
+        <form [formGroup]="emailCheckForm" (ngSubmit)="checkEmailForExisting()" class="email-check-form">
+          <div class="email-check-input">
+            <mat-form-field appearance="outline">
+              <mat-label>Email Address</mat-label>
+              <input matInput formControlName="checkEmail" type="email" placeholder="Enter your email address">
+              <mat-icon matPrefix>email</mat-icon>
+              <button matSuffix mat-icon-button type="button" (click)="emailCheckForm.get('checkEmail')?.setValue('')" *ngIf="emailCheckForm.get('checkEmail')?.value">
+                <mat-icon>close</mat-icon>
+              </button>
+              <mat-error *ngIf="emailCheckForm.get('checkEmail')?.hasError('email')">
+                Please enter a valid email address
+              </mat-error>
+            </mat-form-field>
+            
+            <button mat-raised-button color="primary" type="submit" [disabled]="emailCheckForm.invalid">
+              <mat-icon>search</mat-icon>
+              Check
+            </button>
+          </div>
+        </form>
+        
+        <div class="email-check-divider">
+          <span>OR</span>
+        </div>
+        
+        <div class="new-registration-text">
+          <span>Start New Registration</span>
+        </div>
+      </div>
+
+      <!-- Email Check Result -->
+      <div class="email-check-result" *ngIf="emailChecked">
+        <div class="result-message" [class]="emailCheckMessageType">
+          <mat-icon *ngIf="emailCheckMessageType === 'success'">check_circle</mat-icon>
+          <mat-icon *ngIf="emailCheckMessageType === 'error'">error</mat-icon>
+          <span>{{emailCheckMessage}}</span>
+        </div>
+        
+        <button mat-stroked-button color="primary" (click)="startNewRegistration()" *ngIf="emailCheckMessageType === 'error'">
+          <mat-icon>add</mat-icon>
+          Start New Registration
+        </button>
+      </div>
+
+      <!-- Main Registration Form -->
+      <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()" *ngIf="!emailChecked || isEditing">
+        <div class="edit-info" *ngIf="isEditing">
+          <mat-icon>edit</mat-icon>
+          <span>Editing existing submission ({{daysRemaining}} day(s) remaining)</span>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Full Name</mat-label>
+            <input matInput formControlName="fullName" placeholder="Enter your full name">
+            <button matSuffix mat-icon-button type="button" (click)="clearField('fullName')" *ngIf="registrationForm.get('fullName')?.value">
+              <mat-icon>close</mat-icon>
+            </button>
+            <mat-error *ngIf="registrationForm.get('fullName')?.hasError('required')">
+              Full name is required
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email" type="email" placeholder="Enter your email" (blur)="checkExistingSubmission()">
+            <button matSuffix mat-icon-button type="button" (click)="clearField('email')" *ngIf="registrationForm.get('email')?.value">
+              <mat-icon>close</mat-icon>
+            </button>
+            <mat-error *ngIf="registrationForm.get('email')?.hasError('required')">
+              Email is required
+            </mat-error>
+            <mat-error *ngIf="registrationForm.get('email')?.hasError('email')">
+              Please enter a valid email address
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Phone Number</mat-label>
+            <input matInput formControlName="phone" placeholder="Enter your phone number">
+            <button matSuffix mat-icon-button type="button" (click)="clearField('phone')" *ngIf="registrationForm.get('phone')?.value">
+              <mat-icon>close</mat-icon>
+            </button>
+            <mat-error *ngIf="registrationForm.get('phone')?.hasError('required')">
+              Phone number is required
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Age</mat-label>
+            <input matInput formControlName="age" type="number" placeholder="Enter your age">
+            <button matSuffix mat-icon-button type="button" (click)="clearField('age')" *ngIf="registrationForm.get('age')?.value">
+              <mat-icon>close</mat-icon>
+            </button>
+            <mat-error *ngIf="registrationForm.get('age')?.hasError('required')">
+              Age is required
+            </mat-error>
+            <mat-error *ngIf="registrationForm.get('age')?.hasError('min')">
+              Age must be at least 18
+            </mat-error>
+            <mat-error *ngIf="registrationForm.get('age')?.hasError('max')">
+              Age must be 100 or less
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row single-field">
+          <mat-form-field appearance="outline">
+            <mat-label>City or Region</mat-label>
+            <mat-select formControlName="city" placeholder="Select your city">
+              <mat-option *ngFor="let city of validCities" [value]="city">{{city}}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="registrationForm.get('city')?.hasError('required')">
+              City is required
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row single-field">
+          <mat-form-field appearance="outline">
+            <mat-label>Hobbies</mat-label>
+            <textarea matInput formControlName="hobbies" placeholder="Tell us about your hobbies" rows="3"></textarea>
+            <button matSuffix mat-icon-button type="button" (click)="clearField('hobbies')" *ngIf="registrationForm.get('hobbies')?.value">
+              <mat-icon>close</mat-icon>
+            </button>
+            <mat-error *ngIf="registrationForm.get('hobbies')?.hasError('required')">
+              Hobbies are required
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row single-field">
+          <mat-form-field appearance="outline">
+            <mat-label>Why I am the perfect candidate</mat-label>
+            <textarea matInput formControlName="whyPerfect" placeholder="Explain why you're perfect for space mission" rows="4"></textarea>
+            <button matSuffix mat-icon-button type="button" (click)="clearField('whyPerfect')" *ngIf="registrationForm.get('whyPerfect')?.value">
+              <mat-icon>close</mat-icon>
+            </button>
+            <mat-error *ngIf="registrationForm.get('whyPerfect')?.hasError('required')">
+              This field is required
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="image-upload-section">
+          <label for="profileImage">Profile Image (Optional - JPEG/PNG)</label>
+          <input type="file" id="profileImage" accept="image/jpeg,image/png" (change)="onFileSelected($event)">
+          <app-image-preview [imageUrl]="profileImagePreview" altText="Profile preview"></app-image-preview>
+        </div>
+
+        <div class="form-actions">
+          <button mat-raised-button color="primary" type="submit" [disabled]="registrationForm.invalid">
+            {{ existingCandidate ? 'Update Application' : 'Submit Application' }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div> 

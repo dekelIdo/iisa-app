@@ -1,0 +1,131 @@
+<div class="candidate-detail-modal" *ngIf="candidate">
+  <div class="modal-header">
+    <div class="header-content">
+      <div class="header-title">
+        <div class="avatar-container">
+          <div class="avatar" *ngIf="!candidate?.profileImage">
+            {{ getInitials(candidate?.fullName || '') }}
+          </div>
+          <img class="avatar-image" [src]="candidate?.profileImage" [alt]="candidate?.fullName" *ngIf="candidate?.profileImage" (click)="openImageModal()">
+        </div>
+        <div class="title-content">
+          <h2 class="candidate-name">{{ candidate?.fullName }}</h2>
+          <p class="candidate-subtitle">Space Mission Candidate</p>
+        </div>
+      </div>
+      <button mat-icon-button (click)="close()" class="close-button">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="modal-content">
+    <div class="content-grid">
+      <mat-card class="info-card">
+        <div class="personal-info">
+          <h3>Personal Information</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <mat-icon class="item-icon">email</mat-icon>
+              <div class="item-content">
+                <span class="item-label">Email</span>
+                <span class="item-value">{{ candidate?.email }}</span>
+              </div>
+            </div>
+            <div class="info-item">
+              <mat-icon class="item-icon">phone</mat-icon>
+              <div class="item-content">
+                <span class="item-label">Phone</span>
+                <span class="item-value">{{ candidate?.phone }}</span>
+              </div>
+            </div>
+            <div class="info-item">
+              <mat-icon class="item-icon">cake</mat-icon>
+              <div class="item-content">
+                <span class="item-label">Age</span>
+                <span class="item-value">{{ candidate?.age }} years old</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-card>
+
+      <mat-card class="info-card">
+        <div class="personal-info">
+          <h3>Location</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <mat-icon class="item-icon">location_on</mat-icon>
+              <div class="item-content">
+                <span class="item-label">City</span>
+                <span class="item-value">{{ candidate?.city }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-card>
+
+      <mat-card class="info-card">
+        <div class="personal-info">
+          <h3>Hobbies & Interests</h3>
+          <div class="content-text">
+            <p>{{ candidate?.hobbies }}</p>
+          </div>
+        </div>
+      </mat-card>
+
+      <mat-card class="info-card">
+        <div class="personal-info">
+          <h3>Why I'm Perfect for Space Mission</h3>
+          <div class="content-text">
+            <p>{{ candidate?.whyPerfect }}</p>
+          </div>
+        </div>
+      </mat-card>
+
+      <mat-card class="info-card">
+        <div class="personal-info">
+          <h3>Submission Details</h3>
+          <div class="submission-grid">
+            <div class="submission-item">
+              <span class="submission-label">Submitted:</span>
+              <span class="submission-value">{{ candidate?.submissionDate | date:'medium' }}</span>
+            </div>
+            <div class="submission-item" *ngIf="candidate?.lastEditDate">
+              <span class="submission-label">Last Edited:</span>
+              <span class="submission-value">{{ candidate?.lastEditDate | date:'medium' }}</span>
+            </div>
+          </div>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+
+  <div class="modal-actions">
+    <div class="navigation-section">
+      <button mat-icon-button (click)="previousCandidate()" [disabled]="currentIndex === 0" matTooltip="Previous candidate">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <span class="navigation-counter">{{ currentIndex + 1 }} of {{ candidates.length }}</span>
+      <button mat-icon-button (click)="nextCandidate()" [disabled]="currentIndex === candidates.length - 1" matTooltip="Next candidate">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+    
+    <div class="action-buttons">
+      <button mat-stroked-button (click)="close()" class="secondary-button">
+        Close
+      </button>
+      <button mat-raised-button color="primary" (click)="contactCandidate()" class="primary-button">
+        <mat-icon>email</mat-icon>
+        Contact Candidate
+      </button>
+    </div>
+  </div>
+
+  <app-image-modal 
+    *ngIf="showImageModal" 
+    [imageUrl]="candidate?.profileImage || ''" 
+    (close)="closeImageModal()">
+  </app-image-modal>
+</div>

@@ -1,0 +1,58 @@
+<div class="filters-section">
+  <mat-card class="filters-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>filter_list</mat-icon>
+        Filter Candidates
+      </mat-card-title>
+      <mat-card-subtitle>Refine your search to find specific candidates</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="filters-grid">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Search by name or email</mat-label>
+          <input matInput [(ngModel)]="filters.searchTerm" (ngModelChange)="onFiltersChange()" placeholder="Enter name or email...">
+          <mat-icon matPrefix>search</mat-icon>
+          <button matSuffix mat-icon-button type="button" (click)="onClearSearch()" *ngIf="filters.searchTerm">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline">
+          <mat-label>City</mat-label>
+          <mat-select [(ngModel)]="filters.selectedCity" (ngModelChange)="onFiltersChange()">
+            <mat-option value="">All Cities</mat-option>
+            <mat-option *ngFor="let city of cities" [value]="city">{{city}}</mat-option>
+          </mat-select>
+          <mat-icon matPrefix>location_city</mat-icon>
+          <button matSuffix mat-icon-button type="button" (click)="onClearCity()" *ngIf="filters.selectedCity">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline">
+          <mat-label>Age Range</mat-label>
+          <mat-select [(ngModel)]="filters.selectedAgeRange" (ngModelChange)="onFiltersChange()">
+            <mat-option value="">All Ages</mat-option>
+            <mat-option value="18-25">18-25</mat-option>
+            <mat-option value="26-35">26-35</mat-option>
+            <mat-option value="36-45">36-45</mat-option>
+            <mat-option value="46-55">46-55</mat-option>
+            <mat-option value="55+">55+</mat-option>
+          </mat-select>
+          <mat-icon matPrefix>person</mat-icon>
+          <button matSuffix mat-icon-button type="button" (click)="onClearAgeRange()" *ngIf="filters.selectedAgeRange">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+        
+        <div class="filter-actions">
+          <button mat-raised-button color="warn" (click)="onResetAllFilters()" class="reset-button">
+            <mat-icon>clear_all</mat-icon>
+            Reset All Filters
+          </button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

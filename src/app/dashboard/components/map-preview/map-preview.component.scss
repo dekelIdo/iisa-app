@@ -1,0 +1,81 @@
+.map-preview-section {
+  margin-bottom: 24px;
+}
+
+.map-preview-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  
+  mat-card-header {
+    padding-bottom: 16px;
+    
+    mat-card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 18px;
+      font-weight: 500;
+      
+      mat-icon {
+        color: #1976d2;
+      }
+    }
+    
+    mat-card-subtitle {
+      color: #666;
+      font-size: 14px;
+    }
+  }
+}
+
+.map-preview-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 0;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+}
+
+.map-preview-info {
+  flex: 1;
+  
+  @media (max-width: 768px) {
+    text-align: center;
+  }
+}
+
+.map-preview-text h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 500;
+  color: #333;
+  
+  @media (max-width: 768px) {
+    font-size: 16px;
+  }
+}
+
+.map-preview-text p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+  line-height: 1.4;
+  
+  @media (max-width: 768px) {
+    font-size: 13px;
+  }
+}
+
+.map-preview-button {
+  min-width: 140px;
+  
+  @media (max-width: 768px) {
+    width: 100%;
+    max-width: 200px;
+  }
+}

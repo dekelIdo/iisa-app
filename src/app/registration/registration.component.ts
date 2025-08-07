@@ -1,0 +1,192 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
+import { MatCardModule } from '@angular/material/card';
+import { ReactiveFormsModule } from '@angular/forms';
+import { CandidateService } from '../core/services/candidate.service';
+import { AnalyticsService } from '../core/services/analytics.service';
+import { ImagePreviewComponent } from '../shared/components/image-preview.component';
+import { Candidate } from '../models/candidate.model';
+
+@Component({
+  selector: 'app-registration',
+  standalone: true,
+  imports: [
+    CommonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatSelectModule,
+    MatCardModule,
+    ReactiveFormsModule,
+    ImagePreviewComponent
+  ],
+  templateUrl: './registration.component.html',
+  styleUrl: './registration.component.scss'
+})
+export class RegistrationComponent implements OnInit {
+  registrationForm: FormGroup;
+  emailCheckForm: FormGroup;
+  profileImagePreview: string | null = null;
+  existingCandidate: Candidate | null = null;
+  daysRemaining: number = 3;
+  isEditing: boolean = false;
+  emailChecked: boolean = false;
+  emailCheckMessage: string = '';
+  emailCheckMessageType: 'success' | 'error' | '' = '';
+  validCities: string[] = [
+    'Tel Aviv', 'Jerusalem', 'Haifa', 'Beer Sheva', 'Netanya',
+    'Ashdod', 'Rishon LeZion', 'Petah Tikva', 'Holon', 'Bnei Brak',
+    'Rehovot', 'Kfar Saba', 'Herzliya', 'Modiin', 'Ra\'anana',
+    'Kiryat Gat', 'Lod', 'Nazareth', 'Tiberias', 'Eilat'
+  ];
+
+  constructor(
+    private fb: FormBuilder,
+    private candidateService: CandidateService,
+    private analyticsService: AnalyticsService,
+    private snackBar: MatSnackBar
+  ) {
+    this.registrationForm = this.fb.group({
+      fullName: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      phone: ['', Validators.required],
+      age: ['', [Validators.required, Validators.min(18), Validators.max(100)]],
+      city: ['', Validators.required],
+      hobbies: ['', Validators.required],
+      whyPerfect: ['', Validators.required],
+      profileImage: [null]
+    });
+
+    this.emailCheckForm = this.fb.group({
+      checkEmail: ['', [Validators.email]]
+    });
+  }
+
+  ngOnInit(): void {
+    this.analyticsService.incrementVisits();
+  }
+
+  checkEmailForExisting(): void {
+    const email = this.emailCheckForm.get('checkEmail')?.value;
+    if (email && this.emailCheckForm.get('checkEmail')?.valid) {
+      const status = this.candidateService.getSubmissionStatus(email);
+
+      if (status.canEdit && status.daysRemaining <= 3) {
+        const existing = this.candidateService.getCandidateByEmail(email);
+        if (existing) {
+          this.existingCandidate = existing;
+          this.daysRemaining = status.daysRemaining;
+          this.isEditing = true;
+          this.emailChecked = true;
+          this.emailCheckMessage = `We've found your details. You can now edit them. (${status.daysRemaining} day(s) remaining)`;
+          this.emailCheckMessageType = 'success';
+
+          this.registrationForm.patchValue({
+            fullName: existing.fullName,
+            email: existing.email,
+            phone: existing.phone,
+            age: existing.age,
+            city: existing.city,
+            hobbies: existing.hobbies,
+            whyPerfect: existing.whyPerfect
+          });
+          this.profileImagePreview = existing.profileImage;
+        }
+      } else if (!status.canEdit) {
+        this.emailChecked = true;
+        this.emailCheckMessage = status.message;
+        this.emailCheckMessageType = 'error';
+        this.isEditing = false;
+      } else {
+        this.emailChecked = true;
+        this.emailCheckMessage = 'No existing registration found for this email.';
+        this.emailCheckMessageType = 'error';
+        this.isEditing = false;
+      }
+    }
+  }
+
+  startNewRegistration(): void {
+    this.emailChecked = false;
+    this.isEditing = false;
+    this.existingCandidate = null;
+    this.emailCheckMessage = '';
+    this.emailCheckMessageType = '';
+    this.resetForm();
+  }
+
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.profileImagePreview = e.target.result;
+        this.registrationForm.patchValue({ profileImage: e.target.result });
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  onSubmit(): void {
+    if (this.registrationForm.valid) {
+      const formData = this.registrationForm.value;
+      
+      const defaultImage = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxjaXJjbGUgY3g9IjUwIiBjeT0iNDAiIHI9IjE1IiBmaWxsPSIjQ0NDIi8+CjxyZWN0IHg9IjMwIiB5PSI2MCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjMwIiBmaWxsPSIjQ0NDIi8+Cjwvc3ZnPgo=';
+      
+      const candidate: Candidate = {
+        id: this.existingCandidate?.id || Date.now().toString(),
+        fullName: this.sanitizeInput(formData.fullName),
+        email: this.sanitizeInput(formData.email),
+        phone: this.sanitizeInput(formData.phone),
+        age: formData.age,
+        city: this.sanitizeInput(formData.city),
+        hobbies: this.sanitizeInput(formData.hobbies),
+        whyPerfect: this.sanitizeInput(formData.whyPerfect),
+        profileImage: formData.profileImage || defaultImage,
+        submissionDate: this.existingCandidate?.submissionDate || new Date()
+      };
+
+      if (this.existingCandidate) {
+        this.candidateService.updateCandidate(candidate);
+        this.snackBar.open('Application updated successfully!', 'Close', { duration: 3000 });
+      } else {
+        this.candidateService.addCandidate(candidate);
+        this.snackBar.open('Application submitted successfully! You can edit your submission within 3 days.', 'Close', { duration: 4000 });
+      }
+
+      this.resetForm();
+    }
+  }
+
+  resetForm(): void {
+    this.registrationForm.reset();
+    this.profileImagePreview = null;
+    this.registrationForm.updateValueAndValidity();
+  }
+
+  clearField(fieldName: string): void {
+    this.registrationForm.get(fieldName)?.setValue('');
+  }
+
+  private sanitizeInput(input: string): string {
+    return input.trim().replace(/[<>]/g, '');
+  }
+
+  checkExistingSubmission(): void {
+    const email = this.registrationForm.get('email')?.value;
+    if (email) {
+      const existing = this.candidateService.getCandidateByEmail(email);
+      if (existing && !this.existingCandidate) {
+        this.snackBar.open('An application with this email already exists. You can edit it within 3 days of submission.', 'Close', { duration: 4000 });
+      }
+    }
+  }
+} 
