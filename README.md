@@ -34,6 +34,10 @@ For instructions to run locally please scroll to the end of the README
 ## Responsive design all system 
 <img width="937" height="846" alt="Responsive screens" src="https://github.com/user-attachments/assets/4a26bc47-15bd-4f42-95df-1321ddd21075" />
 
+## Login session for acces dashboard - use auth gaurd
+<img width="937" height="881" alt="image" src="https://github.com/user-attachments/assets/123d2dde-5953-45f6-88eb-e9eec75d28b8" />
+
+
 ## Technology Stack
 - Angular 19 (TypeScript)
 - Angular Material (UI components)
