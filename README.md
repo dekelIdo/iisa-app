@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # IISA - Israeli Imaginary Space Agency
 
 A clean Angular 19 application for managing space mission candidates.
@@ -50,3 +51,6 @@ ng serve
 
 ## Data Storage
 All data is stored locally in the browser using LocalStorage. No backend required.
+=======
+# iisa-app
+>>>>>>> e71035908f26bde445823efa0fe8abc409b44575
