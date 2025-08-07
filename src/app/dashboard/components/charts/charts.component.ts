@@ -4,52 +4,15 @@ import { MatCardModule } from '@angular/material/card';
 import { Chart, registerables } from 'chart.js';
 import { Candidate } from '../../../models/candidate.model';
 import { AnalyticsService } from '../../../core/services/analytics.service';
+import { MatIcon } from "@angular/material/icon";
 
 Chart.register(...registerables);
 
 @Component({
   selector: 'app-charts',
   standalone: true,
-  imports: [CommonModule, MatCardModule],
-  template: `
-    <div class="charts-section">
-      <h2 class="section-header">Analytics Overview</h2>
-      <div class="chart-grid">
-        <mat-card class="chart-card">
-          <mat-card-header>
-            <mat-card-title>Age Distribution</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <div class="chart-container">
-              <canvas id="ageChart"></canvas>
-            </div>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card class="chart-card">
-          <mat-card-header>
-            <mat-card-title>Top Cities</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <div class="chart-container">
-              <canvas id="cityChart"></canvas>
-            </div>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card class="chart-card">
-          <mat-card-header>
-            <mat-card-title>Visits vs Registrations</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <div class="chart-container">
-              <canvas id="visitsChart"></canvas>
-            </div>
-          </mat-card-content>
-        </mat-card>
-      </div>
-    </div>
-  `,
+  imports: [CommonModule, MatCardModule, MatIcon],
+  templateUrl:'./charts.component.html',
   styleUrl: './charts.component.scss'
 })
 export class ChartsComponent implements OnInit, OnDestroy, OnChanges {
@@ -59,7 +22,7 @@ export class ChartsComponent implements OnInit, OnDestroy, OnChanges {
   private cityChart: Chart | null = null;
   private visitsChart: Chart | null = null;
 
-  constructor(private analyticsService: AnalyticsService) {}
+  constructor(private analyticsService: AnalyticsService) { }
 
   ngOnInit(): void {
     setTimeout(() => {
@@ -108,14 +71,14 @@ export class ChartsComponent implements OnInit, OnDestroy, OnChanges {
         this.ageChart.destroy();
         this.ageChart = null;
       }
-      
+
       const totalCandidates = Object.values(ageGroups).reduce((sum, count) => sum + count, 0);
-      
+
       if (totalCandidates === 0) {
         this.showNoDataMessage(ctx, 'No candidate data available');
         return;
       }
-      
+
       this.ageChart = new Chart(ctx, {
         type: 'pie',
         data: {
@@ -136,15 +99,15 @@ export class ChartsComponent implements OnInit, OnDestroy, OnChanges {
   private updateCityChart(): void {
     const cityCounts: { [key: string]: number } = {};
     const validCities = this.getValidCities();
-    
+
     this.candidates.forEach(candidate => {
       if (validCities.includes(candidate.city)) {
         cityCounts[candidate.city] = (cityCounts[candidate.city] || 0) + 1;
       }
     });
-    
+
     const sortedCities = Object.entries(cityCounts)
-      .sort(([,a], [,b]) => b - a)
+      .sort(([, a], [, b]) => b - a)
       .slice(0, 5);
 
     const ctx = document.getElementById('cityChart') as HTMLCanvasElement;
@@ -153,19 +116,21 @@ export class ChartsComponent implements OnInit, OnDestroy, OnChanges {
         this.cityChart.destroy();
         this.cityChart = null;
       }
-      
+
       if (sortedCities.length === 0) {
         this.showNoDataMessage(ctx, 'No valid city data available');
         return;
       }
-      
+
+      const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#FF6384', '#C9CBCF'];
+
       this.cityChart = new Chart(ctx, {
         type: 'bar',
         data: {
           labels: sortedCities.map(([city]) => city),
           datasets: [{
             data: sortedCities.map(([, count]) => count),
-            backgroundColor: '#36A2EB',
+            backgroundColor: sortedCities.map((_, index) => colors[index % colors.length]),
             label: 'Candidates by City'
           }]
         },
@@ -192,12 +157,12 @@ export class ChartsComponent implements OnInit, OnDestroy, OnChanges {
         this.visitsChart.destroy();
         this.visitsChart = null;
       }
-      
+
       if (visits === 0 && registrations === 0) {
         this.showNoDataMessage(ctx, 'No analytics data available');
         return;
       }
-      
+
       this.visitsChart = new Chart(ctx, {
         type: 'doughnut',
         data: {

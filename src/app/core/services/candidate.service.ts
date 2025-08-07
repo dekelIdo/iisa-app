@@ -84,7 +84,7 @@ export class CandidateService {
 
   getSubmissionStatus(email: string): { canEdit: boolean; daysRemaining: number; message: string } {
     const candidate = this.getCandidateByEmail(email);
-    
+
     if (!candidate) {
       return {
         canEdit: false,

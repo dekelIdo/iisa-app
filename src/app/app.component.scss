@@ -3,7 +3,7 @@
   top: 0;
   z-index: 1000;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  
+
   @media (max-width: 768px) {
     padding: 0 16px;
   }
@@ -12,16 +12,17 @@
 .toolbar-title {
   font-size: 20px;
   font-weight: 600;
-  
+  cursor: pointer;
+
   .full-title {
     @media (max-width: 768px) {
       display: none;
     }
   }
-  
+
   .short-title {
     display: none;
-    
+
     @media (max-width: 768px) {
       display: inline;
     }
@@ -35,10 +36,10 @@
 .toolbar-actions {
   display: flex;
   gap: 8px;
-  
+
   @media (max-width: 768px) {
     gap: 4px;
-    
+
     button {
       min-width: auto;
       padding: 0 12px;

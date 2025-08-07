@@ -5,7 +5,6 @@
     </mat-card-header>
 
     <mat-card-content>
-      <!-- Email Check Section -->
       <div class="email-check-section" *ngIf="!emailChecked">
         <div class="email-check-header">
           <h3>Already registered?</h3>
@@ -34,7 +33,6 @@
         </form>
         
         <div class="email-check-divider">
-          <span>OR</span>
         </div>
         
         <div class="new-registration-text">
@@ -42,7 +40,6 @@
         </div>
       </div>
 
-      <!-- Email Check Result -->
       <div class="email-check-result" *ngIf="emailChecked">
         <div class="result-message" [class]="emailCheckMessageType">
           <mat-icon *ngIf="emailCheckMessageType === 'success'">check_circle</mat-icon>
@@ -56,7 +53,6 @@
         </button>
       </div>
 
-      <!-- Main Registration Form -->
       <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()" *ngIf="!emailChecked || isEditing">
         <div class="edit-info" *ngIf="isEditing">
           <mat-icon>edit</mat-icon>
@@ -159,9 +155,42 @@
         </div>
 
         <div class="image-upload-section">
-          <label for="profileImage">Profile Image (Optional - JPEG/PNG)</label>
-          <input type="file" id="profileImage" accept="image/jpeg,image/png" (change)="onFileSelected($event)">
-          <app-image-preview [imageUrl]="profileImagePreview" altText="Profile preview"></app-image-preview>
+          <mat-card class="upload-card">
+            <mat-card-content>
+              <div class="upload-area" [class.has-image]="profileImagePreview">
+                <div class="upload-content" *ngIf="!profileImagePreview">
+                  <mat-icon class="upload-icon">cloud_upload</mat-icon>
+                  <h3>Upload Profile Image</h3>
+                  <p>Drag and drop your image here, or click to browse</p>
+                  <p class="file-types">Supported formats: JPEG, PNG</p>
+                  <button mat-stroked-button color="primary" (click)="triggerFileInput()">
+                    <mat-icon>add_photo_alternate</mat-icon>
+                    Choose Image
+                  </button>
+                </div>
+                
+                <div class="image-preview" *ngIf="profileImagePreview">
+                  <img [src]="profileImagePreview" alt="Profile preview" class="preview-image">
+                  <div class="image-actions">
+                    <button mat-icon-button color="primary" (click)="triggerFileInput()" matTooltip="Change image">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button color="warn" (click)="removeImage()" matTooltip="Remove image">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </div>
+                
+                <input 
+                  type="file" 
+                  id="profileImage" 
+                  accept="image/jpeg,image/png" 
+                  (change)="onFileSelected($event)"
+                  class="file-input"
+                  #fileInput>
+              </div>
+            </mat-card-content>
+          </mat-card>
         </div>
 
         <div class="form-actions">

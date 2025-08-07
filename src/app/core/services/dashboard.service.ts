@@ -17,7 +17,7 @@ export class DashboardService {
 
   candidates$ = this.candidatesSubject.asObservable();
   filters$ = this.filtersSubject.asObservable();
-  
+
   filteredCandidates$ = combineLatest([
     this.candidates$,
     this.filters$
@@ -25,7 +25,7 @@ export class DashboardService {
     map(([candidates, filters]) => this.applyFilters(candidates, filters))
   );
 
-  constructor() {}
+  constructor() { }
 
   updateCandidates(candidates: Candidate[]): void {
     this.candidatesSubject.next(candidates);
@@ -46,14 +46,14 @@ export class DashboardService {
 
   private applyFilters(candidates: Candidate[], filters: FilterState): Candidate[] {
     return candidates.filter(candidate => {
-      const matchesSearch = !filters.searchTerm || 
+      const matchesSearch = !filters.searchTerm ||
         candidate.fullName.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
         candidate.email.toLowerCase().includes(filters.searchTerm.toLowerCase());
-      
+
       const matchesCity = !filters.selectedCity || candidate.city === filters.selectedCity;
-      
+
       const matchesAge = !filters.selectedAgeRange || this.matchesAgeRange(candidate.age, filters.selectedAgeRange);
-      
+
       return matchesSearch && matchesCity && matchesAge;
     });
   }

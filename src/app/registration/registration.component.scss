@@ -21,6 +21,7 @@ mat-card {
       font-weight: 600;
       color: #1976d2;
       margin-bottom: 8px;
+      text-align: center;
 
       @media (max-width: 768px) {
         font-size: 20px;
@@ -130,26 +131,16 @@ mat-card {
     &::before {
       content: '';
       position: absolute;
-      top: 50%;
       left: 0;
       right: 0;
       height: 1px;
       background: #e0e0e0;
     }
-
-    span {
-      background: white;
-      padding: 0 16px;
-      color: #666;
-      font-size: 14px;
-      font-weight: 500;
-    }
   }
 
   .new-registration-text {
     text-align: center;
-    margin-top: 16px;
-
+    padding-top: 10px;
     span {
       color: #666;
       font-size: 14px;
@@ -162,7 +153,6 @@ mat-card {
   }
 }
 
-// Email Check Result
 .email-check-result {
   text-align: center;
   padding: 24px 0;
@@ -214,7 +204,6 @@ mat-card {
   }
 }
 
-// Edit Info
 .edit-info {
   display: flex;
   align-items: center;
@@ -240,7 +229,6 @@ mat-card {
   }
 }
 
-// Form Styles
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -266,27 +254,140 @@ mat-form-field {
 }
 
 .image-upload-section {
-  margin-bottom: 20px;
-
-  label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: #333;
-    font-size: 14px;
-  }
-
-  input[type="file"] {
-    margin-bottom: 12px;
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background: #fafafa;
-
-    &:focus {
-      outline: none;
+  margin-bottom: 24px;
+  
+  .upload-card {
+    border: 2px dashed #e0e0e0;
+    border-radius: 12px;
+    background: #fafbfc;
+    transition: all 0.3s ease;
+    
+    &:hover {
       border-color: #1976d2;
+      background: #f8f9fa;
+    }
+    
+    .upload-area {
+      min-height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      
+      @media (max-width: 768px) {
+        min-height: 160px;
+        padding: 24px;
+      }
+      
+      &.has-image {
+        min-height: auto;
+        padding: 16px;
+      }
+      
+      .upload-content {
+        text-align: center;
+        
+        .upload-icon {
+          font-size: 48px;
+          width: 48px;
+          height: 48px;
+          color: #9e9e9e;
+          margin-bottom: 16px;
+          
+          @media (max-width: 768px) {
+            font-size: 40px;
+            width: 40px;
+            height: 40px;
+            margin-bottom: 12px;
+          }
+        }
+        
+        h3 {
+          font-size: 18px;
+          font-weight: 600;
+          color: #333;
+          margin: 0 0 8px 0;
+          
+          @media (max-width: 768px) {
+            font-size: 16px;
+          }
+        }
+        
+        p {
+          font-size: 14px;
+          color: #666;
+          margin: 0 0 8px 0;
+          
+          @media (max-width: 768px) {
+            font-size: 13px;
+          }
+          
+          &.file-types {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 16px;
+            
+            @media (max-width: 768px) {
+              font-size: 11px;
+              margin-bottom: 12px;
+            }
+          }
+        }
+        
+        button {
+          margin-top: 8px;
+          
+          mat-icon {
+            margin-right: 8px;
+          }
+        }
+      }
+      
+      .image-preview {
+        position: relative;
+        width: 100%;
+        max-width: 300px;
+        
+        .preview-image {
+          width: 100%;
+          height: 200px;
+          object-fit: cover;
+          border-radius: 8px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          
+          @media (max-width: 768px) {
+            height: 160px;
+          }
+        }
+        
+        .image-actions {
+          position: absolute;
+          top: 8px;
+          right: 8px;
+          display: flex;
+          gap: 4px;
+          background: rgba(0, 0, 0, 0.6);
+          border-radius: 20px;
+          padding: 4px;
+          
+          button {
+            color: white;
+            background: transparent;
+            
+            &:hover {
+              background: rgba(255, 255, 255, 0.2);
+            }
+          }
+        }
+      }
+      
+      .file-input {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+        pointer-events: none;
+      }
     }
   }
 }

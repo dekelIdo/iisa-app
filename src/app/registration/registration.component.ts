@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CandidateService } from '../core/services/candidate.service';
 import { AnalyticsService } from '../core/services/analytics.service';
@@ -25,6 +26,7 @@ import { Candidate } from '../models/candidate.model';
     MatIconModule,
     MatSelectModule,
     MatCardModule,
+    MatTooltipModule,
     ReactiveFormsModule,
     ImagePreviewComponent
   ],
@@ -32,6 +34,8 @@ import { Candidate } from '../models/candidate.model';
   styleUrl: './registration.component.scss'
 })
 export class RegistrationComponent implements OnInit {
+  @ViewChild('fileInput') fileInput!: ElementRef;
+  
   registrationForm: FormGroup;
   emailCheckForm: FormGroup;
   profileImagePreview: string | null = null;
@@ -72,6 +76,15 @@ export class RegistrationComponent implements OnInit {
 
   ngOnInit(): void {
     this.analyticsService.incrementVisits();
+  }
+
+  triggerFileInput(): void {
+    this.fileInput.nativeElement.click();
+  }
+
+  removeImage(): void {
+    this.profileImagePreview = null;
+    this.registrationForm.patchValue({ profileImage: null });
   }
 
   checkEmailForExisting(): void {

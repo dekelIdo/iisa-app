@@ -37,69 +37,69 @@ export class DashboardComponent implements OnInit, OnDestroy {
   candidates: Candidate[] = [];
   filteredCandidates: Candidate[] = [];
   selectedCandidate: Candidate | null = null;
-  
+
   filters: FilterState = {
     searchTerm: '',
     selectedCity: '',
     selectedAgeRange: ''
   };
-  
+
   private subscription = new Subscription();
-  
+
   constructor(
     private candidateService: CandidateService,
     private analyticsService: AnalyticsService,
     private dashboardService: DashboardService,
     private dialog: MatDialog,
     private router: Router
-  ) {}
-  
+  ) { }
+
   ngOnInit(): void {
     this.loadData();
-    
+
     this.subscription.add(
       this.candidateService.candidates$.subscribe(() => {
         this.loadData();
       })
     );
-    
+
     this.subscription.add(
       this.dashboardService.filteredCandidates$.subscribe(filteredCandidates => {
         this.filteredCandidates = filteredCandidates;
       })
     );
-    
+
     this.subscription.add(
       interval(5000).subscribe(() => {
         this.loadData();
       })
     );
-    
+
     if (this.candidates.length === 0) {
       this.addTestData();
       this.loadData();
     }
   }
-  
+
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
-  
+
   logout(): void {
     sessionStorage.removeItem(AUTH_CONSTANTS.SESSION_KEY);
     this.router.navigate(['/login']);
   }
-  
+
   private loadData(): void {
     this.candidates = this.candidateService.getCandidates();
     this.dashboardService.updateCandidates(this.candidates);
   }
-  
+
   onFiltersChange(filters: FilterState): void {
     this.filters = filters;
     this.dashboardService.updateFilters(filters);
   }
-  
+
   onClearSearch(): void {
     this.filters.searchTerm = '';
     this.dashboardService.updateFilters(this.filters);
@@ -130,9 +130,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   onViewCandidate(candidate: Candidate): void {
     this.selectedCandidate = candidate;
-    
+
     const currentIndex = this.candidates.findIndex(c => c.id === candidate.id);
-    
+
     const dialogRef = this.dialog.open(CandidateDetailsComponent, {
       width: '90vw',
       maxWidth: '800px',
@@ -142,7 +142,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         currentIndex: currentIndex >= 0 ? currentIndex : 0
       }
     });
-    
+
     dialogRef.afterClosed().subscribe(() => {
       this.selectedCandidate = null;
     });
@@ -162,8 +162,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const testCandidates: Candidate[] = [
       {
         id: '1',
-        fullName: 'John Doe',
-        email: 'john.doe@example.com',
+        fullName: 'Dekel Ido',
+        email: 'Dekel-ido-@iisa.com',
         phone: '+972-50-123-4567',
         age: 25,
         city: 'Tel Aviv',
@@ -174,8 +174,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
       },
       {
         id: '2',
-        fullName: 'Jane Smith',
-        email: 'jane.smith@example.com',
+        fullName: 'Eli Yaho Smith',
+        email: 'Eli.smith@leumi.com',
         phone: '+972-52-987-6543',
         age: 32,
         city: 'Jerusalem',
@@ -185,7 +185,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         submissionDate: new Date('2024-01-16T14:45:00Z')
       }
     ];
-    
+
     testCandidates.forEach(candidate => {
       this.candidateService.addCandidate(candidate);
     });

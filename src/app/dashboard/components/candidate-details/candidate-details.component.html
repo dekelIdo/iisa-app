@@ -6,7 +6,8 @@
           <div class="avatar" *ngIf="!candidate?.profileImage">
             {{ getInitials(candidate?.fullName || '') }}
           </div>
-          <img class="avatar-image" [src]="candidate?.profileImage" [alt]="candidate?.fullName" *ngIf="candidate?.profileImage" (click)="openImageModal()">
+          <img class="avatar-image" [src]="candidate?.profileImage" [alt]="candidate?.fullName"
+            *ngIf="candidate?.profileImage" (click)="openImageModal()">
         </div>
         <div class="title-content">
           <h2 class="candidate-name">{{ candidate?.fullName }}</h2>
@@ -103,29 +104,24 @@
 
   <div class="modal-actions">
     <div class="navigation-section">
-      <button mat-icon-button (click)="previousCandidate()" [disabled]="currentIndex === 0" matTooltip="Previous candidate">
+      <button mat-icon-button (click)="previousCandidate()" [disabled]="currentIndex === 0"
+        matTooltip="Previous candidate">
         <mat-icon>chevron_left</mat-icon>
       </button>
       <span class="navigation-counter">{{ currentIndex + 1 }} of {{ candidates.length }}</span>
-      <button mat-icon-button (click)="nextCandidate()" [disabled]="currentIndex === candidates.length - 1" matTooltip="Next candidate">
+      <button mat-icon-button (click)="nextCandidate()" [disabled]="currentIndex === candidates.length - 1"
+        matTooltip="Next candidate">
         <mat-icon>chevron_right</mat-icon>
       </button>
     </div>
-    
+
     <div class="action-buttons">
       <button mat-stroked-button (click)="close()" class="secondary-button">
         Close
       </button>
-      <button mat-raised-button color="primary" (click)="contactCandidate()" class="primary-button">
-        <mat-icon>email</mat-icon>
-        Contact Candidate
-      </button>
     </div>
   </div>
 
-  <app-image-modal 
-    *ngIf="showImageModal" 
-    [imageUrl]="candidate?.profileImage || ''" 
-    (close)="closeImageModal()">
+  <app-image-modal *ngIf="showImageModal" [imageUrl]="candidate?.profileImage || ''" (close)="closeImageModal()">
   </app-image-modal>
 </div>

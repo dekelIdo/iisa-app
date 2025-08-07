@@ -45,7 +45,7 @@ export class CandidateDetailsComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void { }
 
   private updateCurrentCandidate(): void {
     if (this.candidates.length > 0 && this.currentIndex >= 0 && this.currentIndex < this.candidates.length) {
@@ -71,12 +71,6 @@ export class CandidateDetailsComponent implements OnInit, OnDestroy {
 
   close(): void {
     this.dialogRef.close();
-  }
-
-  contactCandidate(): void {
-    if (this.candidate?.email) {
-      window.open(`mailto:${this.candidate.email}?subject=Space Mission Application - ${this.candidate.fullName}`, '_blank');
-    }
   }
 
   openImageModal(): void {

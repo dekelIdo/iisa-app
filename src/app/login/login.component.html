@@ -1,0 +1,38 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <h2>IISA Dashboard Access</h2>
+      <p>Enter the password to access the dashboard</p>
+    </div>
+    
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <mat-form-field appearance="outline">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" formControlName="password" placeholder="Enter password">
+        <mat-icon matPrefix>lock</mat-icon>
+        <button matSuffix mat-icon-button type="button" (click)="clearPassword()" *ngIf="loginForm.get('password')?.value">
+          <mat-icon>close</mat-icon>
+        </button>
+        <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
+          Password is required
+        </mat-error>
+      </mat-form-field>
+      
+      <div class="password-hint">
+        <small>💡 Hint: The password is <code>reflectiz</code>. If you had read the README, you'd know that 😉</small>
+      </div>
+      
+      <button mat-raised-button color="primary" type="submit" [disabled]="loginForm.invalid">
+        <mat-icon>login</mat-icon>
+        Login
+      </button>
+    </form>
+    
+    <div class="login-footer">
+      <button mat-button routerLink="/register">
+        <mat-icon>arrow_back</mat-icon>
+        Back to Registration
+      </button>
+    </div>
+  </div>
+</div>
