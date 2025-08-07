@@ -157,6 +157,9 @@ export class RegistrationComponent implements OnInit {
   }
 
   onFileSelected(event: any): void {
+    event.preventDefault();
+    event.stopPropagation();
+    
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();

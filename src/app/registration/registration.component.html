@@ -168,7 +168,7 @@
                   <h3>Upload Profile Image</h3>
                   <p>Drag and drop your image here, or click to browse</p>
                   <p class="file-types">Supported formats: JPEG, PNG</p>
-                  <button mat-stroked-button color="primary" (click)="triggerFileInput()">
+                  <button mat-stroked-button color="primary" type="button" (click)="triggerFileInput()">
                     <mat-icon>add_photo_alternate</mat-icon>
                     Choose Image
                   </button>
@@ -177,10 +177,10 @@
                 <div class="image-preview" *ngIf="profileImagePreview">
                   <img [src]="profileImagePreview" alt="Profile preview" class="preview-image">
                   <div class="image-actions">
-                    <button mat-icon-button color="primary" (click)="triggerFileInput()" matTooltip="Change image">
+                    <button mat-icon-button color="primary" type="button" (click)="triggerFileInput()" matTooltip="Change image">
                       <mat-icon>edit</mat-icon>
                     </button>
-                    <button mat-icon-button color="warn" (click)="removeImage()" matTooltip="Remove image">
+                    <button mat-icon-button color="warn" type="button" (click)="removeImage()" matTooltip="Remove image">
                       <mat-icon>delete</mat-icon>
                     </button>
                   </div>
@@ -191,6 +191,7 @@
                   id="profileImage" 
                   accept="image/jpeg,image/png" 
                   (change)="onFileSelected($event)"
+                  (click)="$event.stopPropagation()"
                   class="file-input"
                   #fileInput>
               </div>
