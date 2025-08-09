@@ -62,12 +62,15 @@
         <div class="form-row">
           <mat-form-field appearance="outline">
             <mat-label>Full Name</mat-label>
-            <input matInput formControlName="fullName" placeholder="Enter your full name">
+            <input matInput formControlName="fullName" placeholder="Enter your first and last name">
             <button matSuffix mat-icon-button type="button" (click)="clearField('fullName')" *ngIf="registrationForm.get('fullName')?.value">
               <mat-icon>close</mat-icon>
             </button>
             <mat-error *ngIf="registrationForm.get('fullName')?.hasError('required')">
               Full name is required
+            </mat-error>
+            <mat-error *ngIf="registrationForm.get('fullName')?.hasError('fullNameFormat')">
+              Please enter your first name and last name
             </mat-error>
           </mat-form-field>
 

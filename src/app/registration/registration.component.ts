@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -52,6 +52,16 @@ export class RegistrationComponent implements OnInit {
     'Kiryat Gat', 'Lod', 'Nazareth', 'Tiberias', 'Eilat'
   ];
 
+  private fullNameValidator(control: AbstractControl): ValidationErrors | null {
+    const value = control.value;
+    if (!value) return null;
+    
+    if (!value.includes(' ')) {
+      return { fullNameFormat: true };
+    }
+    return null;
+  }
+
   constructor(
     private fb: FormBuilder,
     private candidateService: CandidateService,
@@ -59,7 +69,7 @@ export class RegistrationComponent implements OnInit {
     private snackBar: MatSnackBar
   ) {
     this.registrationForm = this.fb.group({
-      fullName: ['', Validators.required],
+      fullName: ['', [Validators.required, this.fullNameValidator.bind(this)]],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required, Validators.pattern(/^[0-9+\-\s()]*$/)]],
       age: ['', [Validators.required, Validators.min(18), Validators.max(100)]],

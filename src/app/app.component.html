@@ -5,8 +5,8 @@
   </span>
   <span class="spacer"></span>
   <div class="toolbar-actions">
-    <button mat-button routerLink="/register">Registration</button>
-    <button mat-button routerLink="/dashboard">Dashboard</button>
+    <button mat-button routerLink="/register" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Registration</button>
+    <button mat-button routerLink="/dashboard" routerLinkActive="active">Dashboard</button>
   </div>
 </mat-toolbar>
 
