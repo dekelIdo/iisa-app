@@ -122,6 +122,6 @@
     </div>
   </div>
 
-  <app-image-modal *ngIf="showImageModal" [imageUrl]="candidate?.profileImage || ''" (close)="closeImageModal()">
+  <app-image-modal *ngIf="showImageModal" [imageUrl]="candidate?.profileImage || ''" [altText]="candidate?.fullName || ''" (closeModal)="closeImageModal()">
   </app-image-modal>
 </div>
