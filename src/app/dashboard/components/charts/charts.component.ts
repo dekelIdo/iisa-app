@@ -26,16 +26,12 @@ export class ChartsComponent implements OnInit, OnDestroy, OnChanges {
   constructor(private analyticsService: AnalyticsService, private dashboardService: DashboardService) { }
 
   ngOnInit(): void {
-    setTimeout(() => {
       this.updateCharts();
-    }, 100);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['candidates'] && !changes['candidates'].firstChange) {
-      setTimeout(() => {
         this.updateCharts();
-      }, 100);
     }
   }
 

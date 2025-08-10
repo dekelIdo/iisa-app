@@ -5,6 +5,7 @@ import { Candidate } from '../../models/candidate.model';
 import { FilterState } from '../../models/filter-state.model';
 import { CandidateService } from '../services/candidate.service'
 import { CityCoordinates } from '../../models';
+import { NotificationService } from './notification.service';
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +28,10 @@ export class DashboardService {
     map(([candidates, filters]) => this.applyFilters(candidates, filters))
   );
 
-  constructor(private CandidateService: CandidateService) { }
+  constructor(
+    private CandidateService: CandidateService,
+    private notificationService: NotificationService
+  ) { }
 
   updateCandidates(candidates: Candidate[]): void {
     this.candidatesSubject.next(candidates);
@@ -76,48 +80,58 @@ export class DashboardService {
   }
 
   addInitMockData(): void {
-    const testCandidates: Candidate[] = [
-      {
-        id: '1',
-        fullName: 'Dekel Ido',
-        email: 'Dekel-ido-@iisa.com',
-        phone: '+972-50-123-4567',
-        age: 25,
-        city: 'Tel Aviv',
-        hobbies: 'Astronomy, Hiking, Photography',
-        whyPerfect: 'I have always been fascinated by space exploration and have extensive experience in scientific research.',
-        profileImage: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxjaXJjbGUgY3g9IjUwIiBjeT0iNDAiIHI9IjE1IiBmaWxsPSIjQ0NDIi8+CjxyZWN0IHg9IjMwIiB5PSI2MCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjMwIiBmaWxsPSIjQ0NDIi8+Cjwvc3ZnPgo=',
-        submissionDate: new Date('2024-01-15T10:30:00Z')
-      },
-      {
-        id: '2',
-        fullName: 'Dekel Ido2',
-        email: 'Dekel-ido2@iisa.com',
-        phone: '+972-50-123-4567',
-        age: 25,
-        city: 'Tel Aviv',
-        hobbies: 'Astronomy, Hiking, Photography',
-        whyPerfect: 'I have always been fascinated by space exploration and have extensive experience in scientific research.',
-        profileImage: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxjaXJjbGUgY3g9IjUwIiBjeT0iNDAiIHI9IjE1IiBmaWxsPSIjQ0NDIi8+CjxyZWN0IHg9IjMwIiB5PSI2MCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjMwIiBmaWxsPSIjQ0NDIi8+Cjwvc3ZnPgo=',
-        submissionDate: new Date('2024-01-15T10:30:00Z')
-      },
-      {
-        id: '3',
-        fullName: 'Maya Levi',
-        email: 'Maya.levi@gmail.com',
-        phone: '+972-52-987-6543',
-        age: 32,
-        city: 'Jerusalem',
-        hobbies: 'Space and computer science',
-        whyPerfect: 'Ideal candidate for this mission.',
-        profileImage: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxjaXJjbGUgY3g9IjUwIiBjeT0iNDAiIHI9IjE1IiBmaWxsPSIjQ0NDIi8+CjxyZWN0IHg9IjMwIiB5PSI2MCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjMwIiBmaWxsPSIjQ0NDIi8+Cjwvc3ZnPgo=',
-        submissionDate: new Date('2024-01-16T14:45:00Z')
-      }
-    ];
+    try {
+      const testCandidates: Candidate[] = [
+        {
+          id: '1',
+          fullName: 'Dekel Ido',
+          email: 'Dekel-ido-@iisa.com',
+          phone: '+972-50-123-4567',
+          age: 25,
+          city: 'Tel Aviv',
+          hobbies: 'Astronomy, Hiking, Photography',
+          whyPerfect: 'I have always been fascinated by space exploration and have extensive experience in scientific research.',
+          profileImage: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxjaXJjbGUgY3g9IjUwIiBjeT0iNDAiIHI9IjE1IiBmaWxsPSIjQ0NDIi8+CjxyZWN0IHg9IjMwIiB5PSI2MCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjMwIiBmaWxsPSIjQ0NDIi8+Cjwvc3ZnPgo=',
+          submissionDate: new Date('2024-01-15T10:30:00Z')
+        },
+        {
+          id: '2',
+          fullName: 'Dekel Ido2',
+          email: 'Dekel-ido2@iisa.com',
+          phone: '+972-50-123-4567',
+          age: 25,
+          city: 'Tel Aviv',
+          hobbies: 'Astronomy, Hiking, Photography',
+          whyPerfect: 'I have always been fascinated by space exploration and have extensive experience in scientific research.',
+          profileImage: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxjaXJjbGUgY3g9IjUwIiBjeT0iNDAiIHI9IjE1IiBmaWxsPSIjQ0NDIi8+CjxyZWN0IHg9IjMwIiB5PSI2MCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjMwIiBmaWxsPSIjQ0NDIi8+Cjwvc3ZnPgo=',
+          submissionDate: new Date('2024-01-16T14:45:00Z')
+        },
+        {
+          id: '3',
+          fullName: 'Maya Levi',
+          email: 'Maya.levi@gmail.com',
+          phone: '+972-52-987-6543',
+          age: 32,
+          city: 'Jerusalem',
+          hobbies: 'Space and computer science',
+          whyPerfect: 'Ideal candidate for this mission.',
+          profileImage: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxjaXJjbGUgY3g9IjUwIiBjeT0iNDAiIHI9IjE1IiBmaWxsPSIjQ0NDIi8+CjxyZWN0IHg9IjMwIiB5PSI2MCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjMwIiBmaWxsPSIjQ0NDIi8+Cjwvc3ZnPgo=',
+          submissionDate: new Date('2024-01-16T14:45:00Z')
+        }
+      ];
 
-    testCandidates.forEach(candidate => {
-      this.CandidateService.addCandidate(candidate);
-    });
+      let successCount = 0;
+      testCandidates.forEach(candidate => {
+        if (this.CandidateService.addCandidate(candidate)) {
+          successCount++;
+        }
+      });
+      if (successCount > 0) {
+        this.notificationService.success(`Successfully added ${successCount} mock candidates to the system.`);
+      }
+    } catch (error) {
+      this.notificationService.error('Failed to initialize mock data. Please try again.');
+    }
   }
 
   getValidCities(): string[] {

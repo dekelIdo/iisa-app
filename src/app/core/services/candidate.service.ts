@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Candidate } from '../../models/candidate.model';
+import { NotificationService } from './notification.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,7 @@ export class CandidateService {
   private candidatesSubject = new BehaviorSubject<Candidate[]>([]);
   candidates$ = this.candidatesSubject.asObservable();
 
-  constructor() {
+  constructor(private notificationService: NotificationService) {
     this.loadCandidates();
   }
 
@@ -30,21 +31,48 @@ export class CandidateService {
     this.candidatesSubject.next(candidates);
   }
 
-  addCandidate(candidate: Candidate): void {
-    const candidates = this.getCandidates();
-    candidates.push(candidate);
-    this.saveCandidates(candidates);
+  addCandidate(candidate: Candidate): boolean {
+    try {
+      const candidates = this.getCandidates();
+      const existingCandidate = this.getCandidateByEmail(candidate.email);
+      if (existingCandidate) {
+        this.notificationService.duplicateEmailError();
+        return false;
+      }
+
+      candidates.push(candidate);
+      this.saveCandidates(candidates);
+      this.notificationService.applicationSubmitted();
+      return true;
+    } catch (error) {
+      this.notificationService.error('Failed to submit application. Please try again.');
+      return false;
+    }
   }
 
-  updateCandidate(updatedCandidate: Candidate): void {
-    const candidates = this.getCandidates();
-    const index = candidates.findIndex(c => c.id === updatedCandidate.id);
-    if (index !== -1) {
+  updateCandidate(updatedCandidate: Candidate): boolean {
+    try {
+      const candidates = this.getCandidates();
+      const index = candidates.findIndex(c => c.id === updatedCandidate.id);
+      if (index === -1) {
+        this.notificationService.error('Candidate not found. Please try again.');
+        return false;
+      }
+      if (!this.canEditSubmission(updatedCandidate.email)) {
+        this.notificationService.submissionExpired();
+        return false;
+      }
+
       candidates[index] = {
         ...updatedCandidate,
         lastEditDate: new Date()
       };
       this.saveCandidates(candidates);
+      this.notificationService.applicationUpdated();
+      return true;
+    } catch (error) {
+      this.notificationService.error('Failed to update application. Please try again.');
+      return false;
     }
   }
 
@@ -97,17 +125,63 @@ export class CandidateService {
     const daysRemaining = this.getDaysRemaining(email);
 
     if (canEdit) {
+      this.notificationService.existingSubmissionFound();
       return {
         canEdit: true,
         daysRemaining,
         message: `You can edit your submission. ${daysRemaining} day(s) remaining.`
       };
     } else {
+      this.notificationService.submissionExpired();
       return {
         canEdit: false,
         daysRemaining: 0,
         message: 'The 3-day editing window has expired. You can no longer edit your submission.'
       };
+    }
+  }
+  checkEmailAvailability(email: string): boolean {
+    const existingCandidate = this.getCandidateByEmail(email);
+    if (existingCandidate) {
+      if (this.canEditSubmission(email)) {
+        this.notificationService.existingSubmissionFound();
+      } else {
+        this.notificationService.submissionExpired();
+      }
+      return false;
+    }
+    return true;
+  }
+
+  deleteCandidate(id: string): boolean {
+    try {
+      const candidates = this.getCandidates();
+      const index = candidates.findIndex(c => c.id === id);
+      
+      if (index === -1) {
+        this.notificationService.error('Candidate not found.');
+        return false;
+      }
+
+      candidates.splice(index, 1);
+      this.saveCandidates(candidates);
+      this.notificationService.success('Application deleted successfully.');
+      return true;
+    } catch (error) {
+      this.notificationService.error('Failed to delete application. Please try again.');
+      return false;
+    }
+  }
+
+  clearAllCandidates(): boolean {
+    try {
+      this.candidatesSubject.next([]);
+      localStorage.removeItem('candidates');
+      this.notificationService.success('All applications cleared successfully.');
+      return true;
+    } catch (error) {
+      this.notificationService.error('Failed to clear applications. Please try again.');
+      return false;
     }
   }
 } 

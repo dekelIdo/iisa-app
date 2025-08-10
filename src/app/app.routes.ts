@@ -11,3 +11,5 @@ export const routes: Routes = [
     loadComponent: () => import('./dashboard/dashboard.component').then(m => m.DashboardComponent) 
   }
 ];
+
+// I have to say that i didnt use standalone and lazy loading for current delivery but it should be refactor by me immediatly. 

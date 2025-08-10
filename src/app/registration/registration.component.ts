@@ -1,19 +1,19 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
+import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, ReactiveFormsModule } from '@angular/forms';
+
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { ReactiveFormsModule } from '@angular/forms';
+import { MatDividerModule } from '@angular/material/divider';
+import { Candidate } from '../models/candidate.model';
 import { CandidateService } from '../core/services/candidate.service';
 import { AnalyticsService } from '../core/services/analytics.service';
+import { NotificationService } from '../core/services/notification.service';
 import { ImagePreviewComponent } from '../shared/components/image-preview.component';
-import { Candidate } from '../models/candidate.model';
 
 @Component({
   selector: 'app-registration',
@@ -26,7 +26,6 @@ import { Candidate } from '../models/candidate.model';
     MatIconModule,
     MatSelectModule,
     MatCardModule,
-    MatTooltipModule,
     ReactiveFormsModule,
     ImagePreviewComponent
   ],
@@ -66,7 +65,7 @@ export class RegistrationComponent implements OnInit {
     private fb: FormBuilder,
     private candidateService: CandidateService,
     private analyticsService: AnalyticsService,
-    private snackBar: MatSnackBar
+    private notificationService: NotificationService
   ) {
     this.registrationForm = this.fb.group({
       fullName: ['', [Validators.required, this.fullNameValidator.bind(this)]],
@@ -189,10 +188,7 @@ export class RegistrationComponent implements OnInit {
       if (!this.existingCandidate) {
         const existingCandidate = this.candidateService.getCandidateByEmail(email);
         if (existingCandidate) {
-          this.snackBar.open('An application with this email already exists. You can edit it within 3 days of submission.', 'Close', { 
-            duration: 4000,
-            panelClass: ['error-snackbar']
-          });
+          this.notificationService.duplicateEmailError();
           this.registrationForm.get('email')?.setValue('');
           return;
         }
@@ -214,11 +210,13 @@ export class RegistrationComponent implements OnInit {
       };
 
       if (this.existingCandidate) {
-        this.candidateService.updateCandidate(candidate);
-        this.snackBar.open('Application updated successfully!', 'Close', { duration: 3000 });
+        if (this.candidateService.updateCandidate(candidate)) {
+          this.notificationService.applicationUpdated();
+        }
       } else {
-        this.candidateService.addCandidate(candidate);
-        this.snackBar.open('Application submitted successfully! You can edit your submission within 3 days.', 'Close', { duration: 4000 });
+        if (this.candidateService.addCandidate(candidate)) {
+          this.notificationService.applicationSubmitted();
+        }
       }
 
       this.resetForm();
@@ -262,7 +260,7 @@ export class RegistrationComponent implements OnInit {
     if (email) {
       const existing = this.candidateService.getCandidateByEmail(email);
       if (existing && !this.existingCandidate) {
-        this.snackBar.open('An application with this email already exists. You can edit it within 3 days of submission.', 'Close', { duration: 4000 });
+        this.notificationService.duplicateEmailError();
         this.registrationForm.get('email')?.setValue('');
       }
     }
