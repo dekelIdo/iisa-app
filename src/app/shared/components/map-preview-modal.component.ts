@@ -129,7 +129,7 @@ export class MapPreviewModalComponent implements OnInit, OnDestroy {
   
   constructor(
     public dialogRef: MatDialogRef<MapPreviewModalComponent>,
-    private dashboardService: DashboardService
+    private dashboardService: DashboardService,
     @Inject(MAT_DIALOG_DATA) public data: { candidates: Candidate[] }
   ) {
     this.candidates = data.candidates;
