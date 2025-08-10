@@ -5,6 +5,7 @@ import { Chart, registerables } from 'chart.js';
 import { Candidate } from '../../../models/candidate.model';
 import { AnalyticsService } from '../../../core/services/analytics.service';
 import { MatIcon } from "@angular/material/icon";
+import { DashboardService } from '../../../core/services/dashboard.service';
 
 Chart.register(...registerables);
 
@@ -22,7 +23,7 @@ export class ChartsComponent implements OnInit, OnDestroy, OnChanges {
   private cityChart: Chart | null = null;
   private visitsChart: Chart | null = null;
 
-  constructor(private analyticsService: AnalyticsService) { }
+  constructor(private analyticsService: AnalyticsService, private dashboardService: DashboardService) { }
 
   ngOnInit(): void {
     setTimeout(() => {
@@ -98,7 +99,7 @@ export class ChartsComponent implements OnInit, OnDestroy, OnChanges {
 
   private updateCityChart(): void {
     const cityCounts: { [key: string]: number } = {};
-    const validCities = this.getValidCities();
+    const validCities = this.dashboardService.getValidCities();
 
     this.candidates.forEach(candidate => {
       if (validCities.includes(candidate.city)) {
@@ -194,15 +195,6 @@ export class ChartsComponent implements OnInit, OnDestroy, OnChanges {
       this.visitsChart.destroy();
       this.visitsChart = null;
     }
-  }
-
-  private getValidCities(): string[] {
-    return [
-      'Tel Aviv', 'Jerusalem', 'Haifa', 'Beer Sheva', 'Netanya',
-      'Ashdod', 'Rishon LeZion', 'Petah Tikva', 'Holon', 'Bnei Brak',
-      'Rehovot', 'Kfar Saba', 'Herzliya', 'Modiin', 'Ra\'anana',
-      'Kiryat Gat', 'Lod', 'Nazareth', 'Tiberias', 'Eilat'
-    ];
   }
 
   private showNoDataMessage(canvas: HTMLCanvasElement, message: string): void {

@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { Candidate } from '../../models/candidate.model';
 import { CityCoordinates } from '../../models/map-location.model';
 import * as L from 'leaflet';
+import { DashboardService } from '../../core/services/dashboard.service';
 
 @Component({
   selector: 'app-map-preview-modal',
@@ -128,6 +129,7 @@ export class MapPreviewModalComponent implements OnInit, OnDestroy {
   
   constructor(
     public dialogRef: MatDialogRef<MapPreviewModalComponent>,
+    private dashboardService: DashboardService
     @Inject(MAT_DIALOG_DATA) public data: { candidates: Candidate[] }
   ) {
     this.candidates = data.candidates;
@@ -164,12 +166,12 @@ export class MapPreviewModalComponent implements OnInit, OnDestroy {
   private updateMarkers(): void {
     this.clearMarkers();
     
-    const validCities = this.getValidCities();
+    const validCities = this.dashboardService.getValidCities();
     let validCandidates = 0;
     
     this.candidates.forEach(candidate => {
       if (validCities.includes(candidate.city)) {
-        const coords = this.getCoordinatesForCity(candidate.city);
+        const coords = this.dashboardService.getCoordinatesForCity(candidate.city);
         if (coords) {
           const marker = L.marker(coords)
             .addTo(this.map!)
@@ -227,39 +229,4 @@ export class MapPreviewModalComponent implements OnInit, OnDestroy {
     this.markers = [];
   }
 
-  private getCoordinatesForCity(city: string): [number, number] | null {
-    const cityCoords: CityCoordinates = {
-      'Tel Aviv': [32.0853, 34.7818],
-      'Jerusalem': [31.7683, 35.2137],
-      'Haifa': [32.7940, 34.9896],
-      'Beer Sheva': [31.2518, 34.7913],
-      'Netanya': [32.3328, 34.8600],
-      'Ashdod': [31.8044, 34.6500],
-      'Rishon LeZion': [31.9686, 34.7983],
-      'Petah Tikva': [32.0840, 34.8878],
-      'Holon': [32.0167, 34.7792],
-      'Bnei Brak': [32.0807, 34.8338],
-      'Rehovot': [31.8969, 34.8167],
-      'Kfar Saba': [32.1750, 34.9070],
-      'Herzliya': [32.1667, 34.8167],
-      'Modiin': [31.8928, 35.0153],
-      'Ra\'anana': [32.1833, 34.8667],
-      'Kiryat Gat': [31.6100, 34.7642],
-      'Lod': [31.9514, 34.8953],
-      'Nazareth': [32.7000, 35.3000],
-      'Tiberias': [32.7947, 35.5322],
-      'Eilat': [29.5581, 34.9482]
-    };
-    
-    return cityCoords[city] || null;
-  }
-
-  getValidCities(): string[] {
-    return [
-      'Tel Aviv', 'Jerusalem', 'Haifa', 'Beer Sheva', 'Netanya',
-      'Ashdod', 'Rishon LeZion', 'Petah Tikva', 'Holon', 'Bnei Brak',
-      'Rehovot', 'Kfar Saba', 'Herzliya', 'Modiin', 'Ra\'anana',
-      'Kiryat Gat', 'Lod', 'Nazareth', 'Tiberias', 'Eilat'
-    ];
-  }
 } 

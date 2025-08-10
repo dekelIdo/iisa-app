@@ -45,10 +45,18 @@ For instructions to run locally please scroll to the end of the README
 - Leaflet for maps
 - LocalStorage for data persistence
 - RxJS for reactive programming
+- Cursor Ai
 
 ## Getting Started
 
-1. Install dependencies:
+```bash
+git clone https://github.com/dekelIdo/iisa-app.git
+```
+
+```bash
+cd iisa-app
+```
+
 ```bash
 npm install
 ```

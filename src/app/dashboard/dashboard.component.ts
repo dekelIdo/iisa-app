@@ -76,7 +76,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     );
 
     if (this.candidates.length === 0) {
-      this.addInitMockData();
+      this.dashboardService.addInitMockData();
       this.loadData();
     }
   }
