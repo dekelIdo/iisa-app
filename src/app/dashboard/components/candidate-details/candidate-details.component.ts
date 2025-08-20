@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -23,7 +23,7 @@ import { ImageModalComponent } from '../../../shared/components/image-modal.comp
   templateUrl: './candidate-details.component.html',
   styleUrl: './candidate-details.component.scss'
 })
-export class CandidateDetailsComponent implements OnInit, OnDestroy {
+export class CandidateDetailsComponent implements OnInit {
   candidates: Candidate[] = [];
   currentIndex: number = 0;
   candidate: Candidate | null = null;
@@ -44,8 +44,6 @@ export class CandidateDetailsComponent implements OnInit, OnDestroy {
       this.updateCurrentCandidate();
     }
   }
-
-  ngOnDestroy(): void { }
 
   private updateCurrentCandidate(): void {
     if (this.candidates.length > 0 && this.currentIndex >= 0 && this.currentIndex < this.candidates.length) {

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
@@ -7,7 +7,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { CandidateService } from '../core/services/candidate.service';
 import { AnalyticsService } from '../core/services/analytics.service';
 import { DashboardService } from '../core/services/dashboard.service';
-import { Subscription, interval } from 'rxjs';
+import { interval, Observable } from 'rxjs';
+import { startWith, switchMap, tap, map, take } from 'rxjs/operators';
 import { CandidateDetailsComponent } from './components/candidate-details/candidate-details.component';
 import { MapPreviewModalComponent } from '../shared/components/map-preview-modal.component';
 import { ChartsComponent } from './components/charts/charts.component';
@@ -33,9 +34,7 @@ import { Candidate, FilterState } from '../models';
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
-export class DashboardComponent implements OnInit, OnDestroy {
-  candidates: Candidate[] = [];
-  filteredCandidates: Candidate[] = [];
+export class DashboardComponent implements OnInit {
   selectedCandidate: Candidate | null = null;
 
   filters: FilterState = {
@@ -44,7 +43,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     selectedAgeRange: ''
   };
 
-  private subscription = new Subscription();
+  candidates$!: Observable<Candidate[]>;
+  filteredCandidates$!: Observable<Candidate[]>;
+  cities$!: Observable<string[]>;
+  private autoRefresh$!: Observable<number>;
 
   constructor(
     private candidateService: CandidateService,
@@ -55,34 +57,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
+    this.candidates$ = this.candidateService.candidates$;
+    this.filteredCandidates$ = this.dashboardService.filteredCandidates$;
+    this.cities$ = this.candidates$.pipe(
+      map((candidates: Candidate[]) => this.dashboardService.getCities(candidates))
+    );
+    this.autoRefresh$ = interval(5000).pipe(
+      startWith(0),
+      tap(() => this.loadData())
+    );
+
     this.loadData();
 
-    this.subscription.add(
-      this.candidateService.candidates$.subscribe(() => {
-        this.loadData();
-      })
-    );
+    this.autoRefresh$.subscribe();
 
-    this.subscription.add(
-      this.dashboardService.filteredCandidates$.subscribe(filteredCandidates => {
-        this.filteredCandidates = filteredCandidates;
-      })
-    );
-
-    this.subscription.add(
-      interval(5000).subscribe(() => {
-        this.loadData();
-      })
-    );
-
-    if (this.candidates.length === 0) {
+    if (this.candidateService.getCandidates().length === 0) {
       this.dashboardService.addInitMockData();
       this.loadData();
     }
-  }
-
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe();
   }
 
   logout(): void {
@@ -91,8 +83,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private loadData(): void {
-    this.candidates = this.candidateService.getCandidates();
-    this.dashboardService.updateCandidates(this.candidates);
+    const candidates = this.candidateService.getCandidates();
+    this.dashboardService.updateCandidates(candidates);
   }
 
   onFiltersChange(filters: FilterState): void {
@@ -124,37 +116,41 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.dashboardService.resetFilters();
   }
 
-  getCities(): string[] {
-    return this.dashboardService.getCities(this.candidates);
-  }
-
   onViewCandidate(candidate: Candidate): void {
     this.selectedCandidate = candidate;
 
-    const currentIndex = this.candidates.findIndex(c => c.id === candidate.id);
+    this.candidates$.pipe(
+      take(1)
+    ).subscribe((candidates: Candidate[]) => {
+      const currentIndex = candidates.findIndex((c: Candidate) => c.id === candidate.id);
 
-    const dialogRef = this.dialog.open(CandidateDetailsComponent, {
-      width: '90vw',
-      maxWidth: '800px',
-      maxHeight: '90vh',
-      data: {
-        candidates: this.candidates,
-        currentIndex: currentIndex >= 0 ? currentIndex : 0
-      }
-    });
+      const dialogRef = this.dialog.open(CandidateDetailsComponent, {
+        width: '90vw',
+        maxWidth: '800px',
+        maxHeight: '90vh',
+        data: {
+          candidates: candidates,
+          currentIndex: currentIndex >= 0 ? currentIndex : 0
+        }
+      });
 
-    dialogRef.afterClosed().subscribe(() => {
-      this.selectedCandidate = null;
+      dialogRef.afterClosed().subscribe(() => {
+        this.selectedCandidate = null;
+      });
     });
   }
 
   onOpenMap(): void {
-    const dialogRef = this.dialog.open(MapPreviewModalComponent, {
-      width: '90vw',
-      maxWidth: '1200px',
-      maxHeight: '90vh',
-      data: { candidates: this.candidates },
-      panelClass: 'map-preview-dialog'
+    this.candidates$.pipe(
+      take(1)
+    ).subscribe((candidates: Candidate[]) => {
+      const dialogRef = this.dialog.open(MapPreviewModalComponent, {
+        width: '90vw',
+        maxWidth: '1200px',
+        maxHeight: '90vh',
+        data: { candidates: candidates },
+        panelClass: 'map-preview-dialog'
+      });
     });
   }
 

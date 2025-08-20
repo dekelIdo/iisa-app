@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, OnChanges, SimpleChanges, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatSortModule, MatSort } from '@angular/material/sort';
@@ -21,7 +21,7 @@ import { Candidate } from '../../../models/candidate.model';
   templateUrl: './candidates-table.component.html',
   styleUrl: './candidates-table.component.scss'
 })
-export class CandidatesTableComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit {
+export class CandidatesTableComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() candidates: Candidate[] = [];
   @Input() filteredCandidates: Candidate[] = [];
   @Output() viewCandidate = new EventEmitter<Candidate>();
@@ -44,8 +44,6 @@ export class CandidatesTableComponent implements OnInit, OnDestroy, OnChanges, A
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
   }
-
-  ngOnDestroy(): void {}
 
   private updateDataSource(): void {
     this.dataSource.data = this.filteredCandidates;

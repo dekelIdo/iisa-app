@@ -14,6 +14,7 @@ import { CandidateService } from '../core/services/candidate.service';
 import { AnalyticsService } from '../core/services/analytics.service';
 import { NotificationService } from '../core/services/notification.service';
 import { ImagePreviewComponent } from '../shared/components/image-preview.component';
+import { DashboardService } from '../core/services/dashboard.service';
 
 @Component({
   selector: 'app-registration',
@@ -44,13 +45,7 @@ export class RegistrationComponent implements OnInit {
   emailChecked: boolean = false;
   emailCheckMessage: string = '';
   emailCheckMessageType: 'success' | 'error' | '' = '';
-  validCities: string[] = [
-    'Tel Aviv', 'Jerusalem', 'Haifa', 'Beer Sheva', 'Netanya',
-    'Ashdod', 'Rishon LeZion', 'Petah Tikva', 'Holon', 'Bnei Brak',
-    'Rehovot', 'Kfar Saba', 'Herzliya', 'Modiin', 'Ra\'anana',
-    'Kiryat Gat', 'Lod', 'Nazareth', 'Tiberias', 'Eilat'
-  ];
-
+  validCities: string[] = []
   private fullNameValidator(control: AbstractControl): ValidationErrors | null {
     const value = control.value;
     if (!value) return null;
@@ -65,7 +60,8 @@ export class RegistrationComponent implements OnInit {
     private fb: FormBuilder,
     private candidateService: CandidateService,
     private analyticsService: AnalyticsService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private dashboardService: DashboardService
   ) {
     this.registrationForm = this.fb.group({
       fullName: ['', [Validators.required, this.fullNameValidator.bind(this)]],
@@ -85,6 +81,7 @@ export class RegistrationComponent implements OnInit {
 
   ngOnInit(): void {
     this.analyticsService.incrementVisits();
+    this.validCities = this.dashboardService.getValidCities()
   }
 
   onPhoneInput(event: any): void {

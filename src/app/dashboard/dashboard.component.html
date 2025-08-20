@@ -7,17 +7,17 @@
     </button>
   </div>
 
-  <app-charts [candidates]="candidates"></app-charts>
+  <app-charts [candidates]="(candidates$ | async) || []"></app-charts>
 
   <app-map-preview 
-    [candidates]="candidates"
+    [candidates]="(candidates$ | async) || []"
     (openMap)="onOpenMap()">
   </app-map-preview>
 
   <div class="candidates-section">
     <app-filters 
       [filters]="filters"
-      [cities]="getCities()"
+      [cities]="(cities$ | async) || []"
       (filtersChange)="onFiltersChange($event)"
       (clearSearch)="onClearSearch()"
       (clearCity)="onClearCity()"
@@ -26,8 +26,8 @@
     </app-filters>
     
     <app-candidates-table 
-      [candidates]="candidates"
-      [filteredCandidates]="filteredCandidates"
+      [candidates]="(candidates$ | async) || []"
+      [filteredCandidates]="(filteredCandidates$ | async) || []"
       (viewCandidate)="onViewCandidate($event)">
     </app-candidates-table>
   </div>
