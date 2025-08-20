@@ -13,9 +13,11 @@ For instructions to run locally please scroll to the end of the README
 - Interactive map showing candidate locations
 - Search and filter functionality
 - Individual candidate detail view with navigation
+<img width="937" height="842" alt="image" src="https://github.com/user-attachments/assets/b2f250da-b51e-4ece-9251-65fb4eca9f2c" />
 
-<img width="937" height="816" alt="image" src="https://github.com/user-attachments/assets/f83ad201-4286-423a-aa75-4d6d715058b0" />
 
+### Selection Register / Edit mode page 
+<img width="937" height="663" alt="image" src="https://github.com/user-attachments/assets/a87e12ec-0eed-4dba-a2f6-dce547f28596" />
 
   
 ### Registration Page
