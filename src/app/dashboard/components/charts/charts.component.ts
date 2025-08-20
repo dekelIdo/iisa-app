@@ -77,18 +77,75 @@ export class ChartsComponent implements OnInit, OnDestroy, OnChanges {
         return;
       }
 
+      // Modern color palette
+      const colors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
+      
       this.ageChart = new Chart(ctx, {
-        type: 'pie',
+        type: 'bar',
         data: {
           labels: Object.keys(ageGroups),
           datasets: [{
             data: Object.values(ageGroups),
-            backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']
+            backgroundColor: colors,
+            borderColor: colors.map(color => this.adjustBrightness(color, -20)),
+            borderWidth: 2,
+            borderRadius: 8,
+            borderSkipped: false,
+            label: 'Candidates by Age'
           }]
         },
         options: {
           responsive: true,
-          maintainAspectRatio: false
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              backgroundColor: 'rgba(0, 0, 0, 0.8)',
+              titleColor: '#fff',
+              bodyColor: '#fff',
+              borderColor: '#3B82F6',
+              borderWidth: 1,
+              cornerRadius: 8,
+              displayColors: false,
+              callbacks: {
+                label: function(context) {
+                  const value = context.parsed.y;
+                  const total = context.dataset.data.reduce((a: any, b: any) => (a || 0) + (b || 0), 0);
+                  const percentage = ((value / total) * 100).toFixed(1);
+                  return `${value} candidates (${percentage}%)`;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: {
+                display: false
+              },
+              ticks: {
+                color: '#6B7280',
+                font: {
+                  size: 12,
+                  weight: 'bold'
+                }
+              }
+            },
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: '#E5E7EB'
+              },
+              ticks: {
+                color: '#6B7280',
+                font: {
+                  size: 12
+                },
+                stepSize: 1
+              }
+            }
+          }
         }
       });
     }
@@ -120,7 +177,8 @@ export class ChartsComponent implements OnInit, OnDestroy, OnChanges {
         return;
       }
 
-      const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#FF6384', '#C9CBCF'];
+      // Modern color palette for cities
+      const colors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4', '#84CC16', '#F97316'];
 
       this.cityChart = new Chart(ctx, {
         type: 'bar',
@@ -129,15 +187,60 @@ export class ChartsComponent implements OnInit, OnDestroy, OnChanges {
           datasets: [{
             data: sortedCities.map(([, count]) => count),
             backgroundColor: sortedCities.map((_, index) => colors[index % colors.length]),
+            borderColor: sortedCities.map((_, index) => this.adjustBrightness(colors[index % colors.length], -20)),
+            borderWidth: 2,
+            borderRadius: 8,
+            borderSkipped: false,
             label: 'Candidates by City'
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              backgroundColor: 'rgba(0, 0, 0, 0.8)',
+              titleColor: '#fff',
+              bodyColor: '#fff',
+              borderColor: '#3B82F6',
+              borderWidth: 1,
+              cornerRadius: 8,
+              displayColors: false,
+              callbacks: {
+                label: function(context) {
+                  return `${context.parsed.y} candidates`;
+                }
+              }
+            }
+          },
           scales: {
+            x: {
+              grid: {
+                display: false
+              },
+              ticks: {
+                color: '#6B7280',
+                font: {
+                  size: 12,
+                  weight: 'bold'
+                }
+              }
+            },
             y: {
-              beginAtZero: true
+              beginAtZero: true,
+              grid: {
+                color: '#E5E7EB'
+              },
+              ticks: {
+                color: '#6B7280',
+                font: {
+                  size: 12
+                },
+                stepSize: 1
+              }
             }
           }
         }
@@ -167,13 +270,48 @@ export class ChartsComponent implements OnInit, OnDestroy, OnChanges {
           labels: ['Visits', 'Registrations'],
           datasets: [{
             data: [visits, registrations],
-            backgroundColor: ['#FF6384', '#36A2EB'],
+            backgroundColor: ['#3B82F6', '#10B981'],
+            borderColor: ['#2563EB', '#059669'],
+            borderWidth: 3,
             label: 'Visits vs Registrations'
           }]
         },
         options: {
           responsive: true,
-          maintainAspectRatio: false
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                color: '#6B7280',
+                font: {
+                  size: 12,
+                  weight: 'bold'
+                },
+                padding: 20,
+                usePointStyle: true,
+                pointStyle: 'circle'
+              }
+            },
+            tooltip: {
+              backgroundColor: 'rgba(0, 0, 0, 0.8)',
+              titleColor: '#fff',
+              bodyColor: '#fff',
+              borderColor: '#3B82F6',
+              borderWidth: 1,
+              cornerRadius: 8,
+              displayColors: false,
+              callbacks: {
+                label: function(context) {
+                  const value = context.parsed;
+                  const total = visits + registrations;
+                  const percentage = ((value / total) * 100).toFixed(1);
+                  return `${context.label}: ${value} (${percentage}%)`;
+                }
+              }
+            }
+          },
+          cutout: '60%'
         }
       });
     }
@@ -198,10 +336,25 @@ export class ChartsComponent implements OnInit, OnDestroy, OnChanges {
     const ctx = canvas.getContext('2d');
     if (ctx) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#666';
-      ctx.font = '16px Arial';
+      
+      // Set background
+      ctx.fillStyle = '#F9FAFB';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw message
+      ctx.fillStyle = '#6B7280';
+      ctx.font = '14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(message, canvas.width / 2, canvas.height / 2);
+      ctx.textBaseline = 'middle';
+      
+      // Add icon
+      const iconSize = 24;
+      ctx.font = `${iconSize}px Material Icons`;
+      ctx.fillText('📊', canvas.width / 2, canvas.height / 2 - 20);
+      
+      // Add message
+      ctx.font = '14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      ctx.fillText(message, canvas.width / 2, canvas.height / 2 + 20);
     }
   }
 
@@ -218,5 +371,25 @@ export class ChartsComponent implements OnInit, OnDestroy, OnChanges {
     }
     
     return age;
+  }
+
+  private adjustBrightness(hex: string, percent: number): string {
+    let R = parseInt(hex.slice(1, 3), 16);
+    let G = parseInt(hex.slice(3, 5), 16);
+    let B = parseInt(hex.slice(5, 7), 16);
+
+    R = Math.round(R * (100 + percent) / 100);
+    G = Math.round(G * (100 + percent) / 100);
+    B = Math.round(B * (100 + percent) / 100);
+
+    R = Math.min(255, Math.max(0, R));
+    G = Math.min(255, Math.max(0, G));
+    B = Math.min(255, Math.max(0, B));
+
+    const RR = R.toString(16).length === 1 ? "0" + R.toString(16) : R.toString(16);
+    const GG = G.toString(16).length === 1 ? "0" + G.toString(16) : G.toString(16);
+    const BB = B.toString(16).length === 1 ? "0" + B.toString(16) : B.toString(16);
+
+    return "#" + RR + GG + BB;
   }
 }
