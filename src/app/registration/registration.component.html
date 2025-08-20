@@ -5,10 +5,48 @@
     </mat-card-header>
 
     <mat-card-content>
-      <div class="email-check-section" *ngIf="!emailChecked">
-        <div class="email-check-header">
-          <h3>Already registered?</h3>
-          <p>Enter your email to update your details</p>
+      <!-- Form Selection Interface -->
+      <div class="form-selection" *ngIf="showFormSelection">
+        <div class="selection-header">
+          <h3>Choose Your Path</h3>
+          <p>Select how you'd like to proceed with your application</p>
+        </div>
+        
+        <div class="selection-options">
+          <div class="selection-option" (click)="selectFormType('edit')">
+            <div class="option-icon">
+              <mat-icon>edit</mat-icon>
+            </div>
+            <div class="option-content">
+              <h4>Already Registered</h4>
+              <p>Update your existing application details</p>
+            </div>
+            <mat-icon class="arrow-icon">arrow_forward</mat-icon>
+          </div>
+          
+          <div class="selection-option" (click)="selectFormType('new')">
+            <div class="option-icon">
+              <mat-icon>person_add</mat-icon>
+            </div>
+            <div class="option-content">
+              <h4>New Registration</h4>
+              <p>Submit a new application for the space mission</p>
+            </div>
+            <mat-icon class="arrow-icon">arrow_forward</mat-icon>
+          </div>
+        </div>
+      </div>
+
+      <!-- Email Check Section (Only for Edit) -->
+      <div class="email-check-section" *ngIf="!showFormSelection && selectedFormType === 'edit' && !emailChecked">
+        <div class="section-header">
+          <button mat-icon-button type="button" class="back-button" (click)="goBackToSelection($event)">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+          <div class="email-check-header">
+            <h3>Already registered?</h3>
+            <p>Enter your email to update your details</p>
+          </div>
         </div>
         
         <form [formGroup]="emailCheckForm" (ngSubmit)="checkEmailForExisting()" class="email-check-form">
@@ -31,29 +69,36 @@
             </button>
           </div>
         </form>
-        
-        <div class="email-check-divider">
-        </div>
-        
-        <div class="new-registration-text">
-          <span>Start New Registration</span>
-        </div>
       </div>
 
-      <div class="email-check-result" *ngIf="emailChecked">
+      <!-- Email Check Result (Only for Edit) -->
+      <div class="email-check-result" *ngIf="!showFormSelection && selectedFormType === 'edit' && emailChecked">
+        <div class="section-header">
+          <button mat-icon-button type="button" class="back-button" (click)="goBackToSelection($event)">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+        </div>
+        
         <div class="result-message" [class]="emailCheckMessageType">
           <mat-icon *ngIf="emailCheckMessageType === 'success'">check_circle</mat-icon>
           <mat-icon *ngIf="emailCheckMessageType === 'error'">error</mat-icon>
           <span>{{emailCheckMessage}}</span>
         </div>
         
-        <button mat-stroked-button color="primary" (click)="startNewRegistration()" *ngIf="emailCheckMessageType === 'error'">
-          <mat-icon>add</mat-icon>
-          Start New Registration
+        <button mat-stroked-button type="button" color="primary" (click)="goBackToSelection($event)" *ngIf="emailCheckMessageType === 'error'">
+          <mat-icon>arrow_back</mat-icon>
+          Go Back to Selection
         </button>
       </div>
 
-      <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()" *ngIf="!emailChecked || isEditing">
+      <!-- Registration Form (Only when not showing selection) -->
+      <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()" *ngIf="!showFormSelection && (selectedFormType === 'new' || (selectedFormType === 'edit' && isEditing))">
+        <div class="section-header">
+          <button mat-icon-button type="button" class="back-button" (click)="goBackToSelection($event)">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+        </div>
+
         <div class="edit-info" *ngIf="isEditing">
           <mat-icon>edit</mat-icon>
           <span>Editing existing submission ({{daysRemaining}} day(s) remaining)</span>
@@ -107,19 +152,24 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>Age</mat-label>
-            <input matInput formControlName="age" type="number" placeholder="Enter your age">
-            <button matSuffix mat-icon-button type="button" (click)="clearField('age')" *ngIf="registrationForm.get('age')?.value">
+            <mat-label>Date of Birth</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="dateOfBirth" placeholder="Choose your date of birth" [max]="maxDate" [min]="minDate">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            <button matSuffix mat-icon-button type="button" (click)="clearField('dateOfBirth')" *ngIf="registrationForm.get('dateOfBirth')?.value">
               <mat-icon>close</mat-icon>
             </button>
-            <mat-error *ngIf="registrationForm.get('age')?.hasError('required')">
-              Age is required
+            <mat-error *ngIf="registrationForm.get('dateOfBirth')?.hasError('required')">
+              Date of birth is required
             </mat-error>
-            <mat-error *ngIf="registrationForm.get('age')?.hasError('min')">
-              Age must be at least 18
+            <mat-error *ngIf="registrationForm.get('dateOfBirth')?.hasError('invalidDate')">
+              Please enter a valid date
             </mat-error>
-            <mat-error *ngIf="registrationForm.get('age')?.hasError('max')">
-              Age must be 100 or less
+            <mat-error *ngIf="registrationForm.get('dateOfBirth')?.hasError('tooYoung')">
+              You must be at least 18 years old
+            </mat-error>
+            <mat-error *ngIf="registrationForm.get('dateOfBirth')?.hasError('tooOld')">
+              Please enter a valid date of birth
             </mat-error>
           </mat-form-field>
         </div>

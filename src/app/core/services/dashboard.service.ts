@@ -11,30 +11,26 @@ import { NotificationService } from './notification.service';
   providedIn: 'root'
 })
 export class DashboardService {
-  private candidatesSubject = new BehaviorSubject<Candidate[]>([]);
   private filtersSubject = new BehaviorSubject<FilterState>({
     searchTerm: '',
     selectedCity: '',
     selectedAgeRange: ''
   });
 
-  candidates$ = this.candidatesSubject.asObservable();
   filters$ = this.filtersSubject.asObservable();
 
-  filteredCandidates$ = combineLatest([
-    this.candidates$,
-    this.filters$
-  ]).pipe(
-    map(([candidates, filters]) => this.applyFilters(candidates, filters))
-  );
-
   constructor(
-    private CandidateService: CandidateService,
+    private candidateService: CandidateService,
     private notificationService: NotificationService
   ) { }
 
-  updateCandidates(candidates: Candidate[]): void {
-    this.candidatesSubject.next(candidates);
+  get filteredCandidates$(): Observable<Candidate[]> {
+    return combineLatest([
+      this.candidateService.candidates$,
+      this.filters$
+    ]).pipe(
+      map(([candidates, filters]) => this.applyFilters(candidates, filters))
+    );
   }
 
   updateFilters(filters: Partial<FilterState>): void {
@@ -58,10 +54,26 @@ export class DashboardService {
 
       const matchesCity = !filters.selectedCity || candidate.city === filters.selectedCity;
 
-      const matchesAge = !filters.selectedAgeRange || this.matchesAgeRange(candidate.age, filters.selectedAgeRange);
+      const candidateAge = this.calculateAge(candidate.dateOfBirth);
+      const matchesAge = !filters.selectedAgeRange || this.matchesAgeRange(candidateAge, filters.selectedAgeRange);
 
       return matchesSearch && matchesCity && matchesAge;
     });
+  }
+
+  private calculateAge(dateOfBirth: Date | undefined | null): number {
+    if (!dateOfBirth) return 0;
+    
+    const today = new Date();
+    const birthDate = new Date(dateOfBirth);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    
+    return age;
   }
 
   private matchesAgeRange(age: number, ageRange: string): boolean {
@@ -87,7 +99,7 @@ export class DashboardService {
           fullName: 'Dekel Ido',
           email: 'Dekel-ido-@iisa.com',
           phone: '+972-50-123-4567',
-          age: 25,
+          dateOfBirth: new Date('1999-05-15'),
           city: 'Tel Aviv',
           hobbies: 'Astronomy, Hiking, Photography',
           whyPerfect: 'I have always been fascinated by space exploration and have extensive experience in scientific research.',
@@ -99,7 +111,7 @@ export class DashboardService {
           fullName: 'Dekel Ido2',
           email: 'Dekel-ido2@iisa.com',
           phone: '+972-50-123-4567',
-          age: 25,
+          dateOfBirth: new Date('1999-03-20'),
           city: 'Tel Aviv',
           hobbies: 'Astronomy, Hiking, Photography',
           whyPerfect: 'I have always been fascinated by space exploration and have extensive experience in scientific research.',
@@ -111,7 +123,7 @@ export class DashboardService {
           fullName: 'Maya Levi',
           email: 'Maya.levi@gmail.com',
           phone: '+972-52-987-6543',
-          age: 32,
+          dateOfBirth: new Date('1992-08-10'),
           city: 'Jerusalem',
           hobbies: 'Space and computer science',
           whyPerfect: 'Ideal candidate for this mission.',
@@ -122,7 +134,7 @@ export class DashboardService {
 
       let successCount = 0;
       testCandidates.forEach(candidate => {
-        if (this.CandidateService.addCandidate(candidate)) {
+        if (this.candidateService.addCandidate(candidate)) {
           successCount++;
         }
       });

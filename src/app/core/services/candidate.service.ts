@@ -17,11 +17,22 @@ export class CandidateService {
   private loadCandidates(): void {
     const stored = localStorage.getItem('candidates');
     if (stored) {
-      const candidates = JSON.parse(stored).map((c: any) => ({
-        ...c,
-        submissionDate: new Date(c.submissionDate),
-        lastEditDate: c.lastEditDate ? new Date(c.lastEditDate) : undefined
-      }));
+      const candidates = JSON.parse(stored).map((c: any) => {
+        // Migration: Convert age to dateOfBirth if needed
+        if (c.age && !c.dateOfBirth) {
+          const today = new Date();
+          const birthYear = today.getFullYear() - c.age;
+          c.dateOfBirth = new Date(birthYear, today.getMonth(), today.getDate());
+          delete c.age; // Remove old age property
+        }
+        
+        return {
+          ...c,
+          submissionDate: new Date(c.submissionDate),
+          lastEditDate: c.lastEditDate ? new Date(c.lastEditDate) : undefined,
+          dateOfBirth: c.dateOfBirth ? new Date(c.dateOfBirth) : new Date('1990-01-01') // Default fallback
+        };
+      });
       this.candidatesSubject.next(candidates);
     }
   }
@@ -125,14 +136,12 @@ export class CandidateService {
     const daysRemaining = this.getDaysRemaining(email);
 
     if (canEdit) {
-      this.notificationService.existingSubmissionFound();
       return {
         canEdit: true,
         daysRemaining,
         message: `You can edit your submission. ${daysRemaining} day(s) remaining.`
       };
     } else {
-      this.notificationService.submissionExpired();
       return {
         canEdit: false,
         daysRemaining: 0,
@@ -140,14 +149,10 @@ export class CandidateService {
       };
     }
   }
+  
   checkEmailAvailability(email: string): boolean {
     const existingCandidate = this.getCandidateByEmail(email);
     if (existingCandidate) {
-      if (this.canEditSubmission(email)) {
-        this.notificationService.existingSubmissionFound();
-      } else {
-        this.notificationService.submissionExpired();
-      }
       return false;
     }
     return true;

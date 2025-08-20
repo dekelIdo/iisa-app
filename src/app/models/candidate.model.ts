@@ -3,7 +3,7 @@ export interface Candidate {
   fullName: string;
   email: string;
   phone: string;
-  age: number;
+  dateOfBirth: Date;
   city: string;
   hobbies: string;
   whyPerfect: string;

@@ -178,7 +178,7 @@ export class MapPreviewModalComponent implements OnInit, OnDestroy {
             .bindPopup(`
               <strong>${candidate.fullName}</strong><br>
               ${candidate.email}<br>
-              Age: ${candidate.age}<br>
+              Date of Birth: ${candidate.dateOfBirth.toLocaleDateString()}<br>
               City: ${candidate.city}
             `);
           this.markers.push(marker);

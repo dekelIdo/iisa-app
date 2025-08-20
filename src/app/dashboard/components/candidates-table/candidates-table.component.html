@@ -26,8 +26,8 @@
         </ng-container>
 
         <ng-container matColumnDef="age">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header="age">Age</th>
-          <td mat-cell *matCellDef="let candidate">{{candidate.age}}</td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header="dateOfBirth">Date of Birth</th>
+          <td mat-cell *matCellDef="let candidate">{{ candidate.dateOfBirth | date:'mediumDate' }}</td>
         </ng-container>
 
         <ng-container matColumnDef="city">

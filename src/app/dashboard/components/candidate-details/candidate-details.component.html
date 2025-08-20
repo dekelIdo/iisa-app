@@ -43,8 +43,8 @@
             <div class="info-item">
               <mat-icon class="item-icon">cake</mat-icon>
               <div class="item-content">
-                <span class="item-label">Age</span>
-                <span class="item-value">{{ candidate?.age }} years old</span>
+                <span class="item-label">Date of Birth</span>
+                <span class="item-value">{{ candidate?.dateOfBirth | date:'fullDate' }}</span>
               </div>
             </div>
           </div>

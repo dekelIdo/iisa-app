@@ -7,8 +7,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { CandidateService } from '../core/services/candidate.service';
 import { AnalyticsService } from '../core/services/analytics.service';
 import { DashboardService } from '../core/services/dashboard.service';
-import { interval, Observable } from 'rxjs';
-import { startWith, switchMap, tap, map, take } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { CandidateDetailsComponent } from './components/candidate-details/candidate-details.component';
 import { MapPreviewModalComponent } from '../shared/components/map-preview-modal.component';
 import { ChartsComponent } from './components/charts/charts.component';
@@ -17,6 +17,7 @@ import { CandidatesTableComponent } from './components/candidates-table/candidat
 import { MapPreviewComponent } from './components/map-preview/map-preview.component';
 import { AUTH_CONSTANTS } from '../core/constants/auth.constants';
 import { Candidate, FilterState } from '../models';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dashboard',
@@ -46,7 +47,6 @@ export class DashboardComponent implements OnInit {
   candidates$!: Observable<Candidate[]>;
   filteredCandidates$!: Observable<Candidate[]>;
   cities$!: Observable<string[]>;
-  private autoRefresh$!: Observable<number>;
 
   constructor(
     private candidateService: CandidateService,
@@ -62,18 +62,9 @@ export class DashboardComponent implements OnInit {
     this.cities$ = this.candidates$.pipe(
       map((candidates: Candidate[]) => this.dashboardService.getCities(candidates))
     );
-    this.autoRefresh$ = interval(5000).pipe(
-      startWith(0),
-      tap(() => this.loadData())
-    );
-
-    this.loadData();
-
-    this.autoRefresh$.subscribe();
 
     if (this.candidateService.getCandidates().length === 0) {
       this.dashboardService.addInitMockData();
-      this.loadData();
     }
   }
 
@@ -83,8 +74,8 @@ export class DashboardComponent implements OnInit {
   }
 
   private loadData(): void {
-    const candidates = this.candidateService.getCandidates();
-    this.dashboardService.updateCandidates(candidates);
+    // Data is now automatically loaded through the candidate service stream
+    // No manual update needed
   }
 
   onFiltersChange(filters: FilterState): void {
@@ -151,51 +142,6 @@ export class DashboardComponent implements OnInit {
         data: { candidates: candidates },
         panelClass: 'map-preview-dialog'
       });
-    });
-  }
-
-  private addInitMockData(): void {
-    const testCandidates: Candidate[] = [
-      {
-        id: '1',
-        fullName: 'Dekel Ido',
-        email: 'Dekel-ido-@iisa.com',
-        phone: '+972-50-123-4567',
-        age: 25,
-        city: 'Tel Aviv',
-        hobbies: 'Astronomy, Hiking, Photography',
-        whyPerfect: 'I have always been fascinated by space exploration and have extensive experience in scientific research.',
-        profileImage: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxjaXJjbGUgY3g9IjUwIiBjeT0iNDAiIHI9IjE1IiBmaWxsPSIjQ0NDIi8+CjxyZWN0IHg9IjMwIiB5PSI2MCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjMwIiBmaWxsPSIjQ0NDIi8+Cjwvc3ZnPgo=',
-        submissionDate: new Date('2024-01-15T10:30:00Z')
-      },
-      {
-        id: '2',
-        fullName: 'Dekel Ido',
-        email: 'Dekel-ido-@iisa.com',
-        phone: '+972-50-123-4567',
-        age: 25,
-        city: 'Tel Aviv',
-        hobbies: 'Astronomy, Hiking, Photography',
-        whyPerfect: 'I have always been fascinated by space exploration and have extensive experience in scientific research.',
-        profileImage: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxjaXJjbGUgY3g9IjUwIiBjeT0iNDAiIHI9IjE1IiBmaWxsPSIjQ0NDIi8+CjxyZWN0IHg9IjMwIiB5PSI2MCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjMwIiBmaWxsPSIjQ0NDIi8+Cjwvc3ZnPgo=',
-        submissionDate: new Date('2024-01-15T10:30:00Z')
-      },
-      {
-        id: '3',
-        fullName: 'Maya Levi',
-        email: 'Maya.levi@gmail.com',
-        phone: '+972-52-987-6543',
-        age: 32,
-        city: 'Jerusalem',
-        hobbies: 'Space and computer science',
-        whyPerfect: 'Ideal candidate for this mission.',
-        profileImage: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjRjVGNUY1Ii8+CjxjaXJjbGUgY3g9IjUwIiBjeT0iNDAiIHI9IjE1IiBmaWxsPSIjQ0NDIi8+CjxyZWN0IHg9IjMwIiB5PSI2MCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjMwIiBmaWxsPSIjQ0NDIi8+Cjwvc3ZnPgo=',
-        submissionDate: new Date('2024-01-16T14:45:00Z')
-      }
-    ];
-
-    testCandidates.forEach(candidate => {
-      this.candidateService.addCandidate(candidate);
     });
   }
 } 

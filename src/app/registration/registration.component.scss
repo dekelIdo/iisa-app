@@ -47,21 +47,136 @@ mat-card {
   }
 }
 
-.email-check-section {
+// Form Selection Interface
+.form-selection {
   text-align: center;
-  padding: 8px 0;
+  padding: 20px 0;
+
+  .selection-header {
+    margin-bottom: 32px;
+
+    h3 {
+      font-size: 22px;
+      font-weight: 600;
+      color: #333;
+      margin: 0 0 12px 0;
+
+      @media (max-width: 768px) {
+        font-size: 20px;
+      }
+    }
+
+    p {
+      font-size: 16px;
+      color: #666;
+      margin: 0;
+
+      @media (max-width: 768px) {
+        font-size: 14px;
+      }
+    }
+  }
+
+  .selection-options {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 500px;
+    margin: 0 auto;
+
+    .selection-option {
+      display: flex;
+      align-items: center;
+      padding: 24px;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      background: #fff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+
+      &:hover {
+        border-color: #1976d2;
+        background: #f8f9fa;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(25, 118, 210, 0.15);
+      }
+
+      .option-icon {
+        margin-right: 20px;
+        
+        mat-icon {
+          font-size: 32px;
+          width: 32px;
+          height: 32px;
+          color: #1976d2;
+        }
+      }
+
+      .option-content {
+        flex: 1;
+        text-align: left;
+
+        h4 {
+          font-size: 18px;
+          font-weight: 600;
+          color: #333;
+          margin: 0 0 8px 0;
+
+          @media (max-width: 768px) {
+            font-size: 16px;
+          }
+        }
+
+        p {
+          font-size: 14px;
+          color: #666;
+          margin: 0;
+
+          @media (max-width: 768px) {
+            font-size: 13px;
+          }
+        }
+      }
+
+      .arrow-icon {
+        color: #1976d2;
+        margin-left: 16px;
+      }
+
+      @media (max-width: 768px) {
+        padding: 20px;
+        
+        .option-icon mat-icon {
+          font-size: 28px;
+          width: 28px;
+          height: 28px;
+        }
+      }
+    }
+  }
+}
+
+// Section Header with Back Button
+.section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+
+  .back-button {
+    margin-right: 16px;
+    color: #666;
+    
+    &:hover {
+      color: #1976d2;
+      background: rgba(25, 118, 210, 0.1);
+    }
+  }
 
   .email-check-header {
-    margin-bottom: 24px;
-    align-items: center;
-
-    mat-icon {
-      font-size: 48px;
-      width: 48px;
-      height: 48px;
-      color: #1976d2;
-      margin-bottom: 16px;
-    }
+    flex: 1;
+    text-align: center;
+    margin: 0;
 
     h3 {
       font-size: 20px;
@@ -84,6 +199,19 @@ mat-card {
       }
     }
   }
+
+  @media (max-width: 768px) {
+    margin-bottom: 20px;
+    
+    .back-button {
+      margin-right: 12px;
+    }
+  }
+}
+
+.email-check-section {
+  text-align: center;
+  padding: 8px 0;
 
   .email-check-form {
     margin-bottom: 24px;
@@ -119,35 +247,6 @@ mat-card {
           width: 100%;
           max-width: 200px;
         }
-      }
-    }
-  }
-
-  .email-check-divider {
-    position: relative;
-    text-align: center;
-    margin: 24px 0;
-
-    &::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: #e0e0e0;
-    }
-  }
-
-  .new-registration-text {
-    text-align: center;
-    padding-top: 10px;
-    span {
-      color: #666;
-      font-size: 14px;
-      font-weight: 500;
-
-      @media (max-width: 768px) {
-        font-size: 13px;
       }
     }
   }

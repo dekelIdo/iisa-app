@@ -55,11 +55,12 @@ export class ChartsComponent implements OnInit, OnDestroy, OnChanges {
     };
 
     this.candidates.forEach(candidate => {
-      if (candidate.age >= 18 && candidate.age <= 25) ageGroups['18-25']++;
-      else if (candidate.age >= 26 && candidate.age <= 35) ageGroups['26-35']++;
-      else if (candidate.age >= 36 && candidate.age <= 45) ageGroups['36-45']++;
-      else if (candidate.age >= 46 && candidate.age <= 55) ageGroups['46-55']++;
-      else if (candidate.age > 55) ageGroups['55+']++;
+      const age = this.calculateAge(candidate.dateOfBirth);
+      if (age >= 18 && age <= 25) ageGroups['18-25']++;
+      else if (age >= 26 && age <= 35) ageGroups['26-35']++;
+      else if (age >= 36 && age <= 45) ageGroups['36-45']++;
+      else if (age >= 46 && age <= 55) ageGroups['46-55']++;
+      else if (age > 55) ageGroups['55+']++;
     });
 
     const ctx = document.getElementById('ageChart') as HTMLCanvasElement;
@@ -202,5 +203,20 @@ export class ChartsComponent implements OnInit, OnDestroy, OnChanges {
       ctx.textAlign = 'center';
       ctx.fillText(message, canvas.width / 2, canvas.height / 2);
     }
+  }
+
+  private calculateAge(dateOfBirth: Date | undefined | null): number {
+    if (!dateOfBirth) return 0;
+    
+    const today = new Date();
+    const birthDate = new Date(dateOfBirth);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    
+    return age;
   }
 }
